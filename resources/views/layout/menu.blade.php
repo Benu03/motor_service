@@ -14,7 +14,7 @@
     <!-- Brand Logo -->
     <a href="{{ route('dashboard') }}" class="brand-link d-flex flex-column align-items-center" style="height: auto;">
       <img id="logo_wrap" alt="TS3 Indonesia" class="brand-image-xl py-1" src="{{ asset('assets/upload/image/logo.png') }}">
-      <span id="logo_title" class="text-center" style="font-size: 22px; font-weight: bold; display: none;">TS3 Indonesia</span>
+      <span id="logo_title" class="text-center" style="font-size: 22px; font-weight: bold;">TS3 Indonesia</span>
     </a>
 
     <div class="sidebar">
@@ -24,7 +24,7 @@
         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
 
 
-
+            {{-- looping menu di sini --}}
 
 
 
@@ -39,7 +39,7 @@
     document.addEventListener('DOMContentLoaded', function () {
       const logoWrap = document.getElementById('logo_wrap');
       const logoTitle = document.getElementById('logo_title');
-      const sidebarToggle = document.querySelector('[data-widget="pushmenu"]'); // Tombol toggle sidebar
+      const sidebarToggle = document.querySelector('[data-widget="pushmenu"]'); 
   
       sidebarToggle.addEventListener('click', function () {
         const isSidebarCollapsed = document.body.classList.contains('sidebar-collapse');
