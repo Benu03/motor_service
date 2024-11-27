@@ -2,7 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\{
-    TestController
+    TestController,
+    DashboardController
 };
 
 /*
@@ -17,7 +18,10 @@ use App\Http\Controllers\{
 */
 
 Route::group(['middleware' => ['session_key']],function(){
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::get('/dashboard', [TestController::class, 'tes'])->name('tes');
+    Route::get('/profile', [MainController::class, 'profile'])->name('profile');
+    Route::get('/logout', [MainController::class, 'logout'])->name('logout');
+    Route::get('/lobby', [MainController::class, 'lobby'])->name('lobby');
 
 });
