@@ -37,7 +37,3 @@
     </ul>
 </div>
 
-<a href="{{ config('static.url_puninar_app').'info' }}">Link ke Info</a>
-<a href="{{ config('static.url_puninar_app').'clean' }}">Clean session</a>
-<a href="{{ config('static.url_puninar_app').'back' }}">Back lobby</a>
-

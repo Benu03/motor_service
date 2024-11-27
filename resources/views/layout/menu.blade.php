@@ -26,6 +26,69 @@
 
             {{-- looping menu di sini --}}
 
+            <li class="nav-item">
+              <a href="{{ route('dashboard') }}" class="nav-link">
+                <i class="nav-icon fas fa-tachometer-alt"></i>
+                <p>
+                  Dashboard
+                </p>
+              </a>
+            </li>
+             @php
+                $menus = \DB::connection('mtr')->table('mst.mst_menu')
+                    ->leftJoin('mst.mst_role_menu', 'mst.mst_menu.id', '=', 'mst.mst_role_menu.mst_menu_id')
+                    ->leftJoin('mst.mst_user_role', 'mst.mst_role_menu.mst_user_role_id', '=', 'mst.mst_user_role.id')
+                    ->where('mst_user_role.role_name', session()->get('modules')['role'])
+                    ->where('mst_menu.is_active', true)
+                    ->orderBy('mst.mst_menu.menu_order', 'asc')
+                    ->select('mst.mst_menu.*', 'mst.mst_role_menu.mst_user_role_id', 'mst.mst_user_role.role_name')
+                    ->get();
+
+                // Group the menus by their parent ID
+                $menuTree = $menus->groupBy('menu_parent');
+                @endphp
+
+                @foreach ($menuTree[0] as $parent)
+                    @php
+                        $hasChildren = isset($menuTree[$parent->id]) && count($menuTree[$parent->id]) > 0;
+                        $isParentActive = Request::is(ltrim($parent->menu_url, '/') . '*');
+                    @endphp
+
+                    {{-- Parent Menu --}}
+                    <li class="nav-item {{ $hasChildren ? 'has-treeview' : '' }} {{ $isParentActive ? 'menu-is-opening menu-open' : '' }}">
+                        <a href="{{ $hasChildren ? '#' : route($parent->menu_url) }}" class="nav-link">
+                            <i class="{{ $parent->menu_icon }} nav-icon"></i>
+                            <p>
+                                {{ $parent->menu_name }}
+                                @if ($hasChildren)
+                                    <i class="fas fa-angle-left right"></i>
+                                @endif
+                            </p>
+                        </a>
+
+                        {{-- Children Menu --}}
+                        @if ($hasChildren)
+                            <ul class="nav nav-treeview">
+                                @foreach ($menuTree[$parent->id] as $child)
+                                    @php
+                                        $isChildActive = Request::is(ltrim($child->menu_url, '/') . '*');
+                                    @endphp
+                                    <li class="nav-item ml-4 {{ $isChildActive ? 'active' : '' }}">
+                                        <a href="{{ route($child->menu_url) }}" class="nav-link">
+                                            <i class="{{ $child->menu_icon }} nav-icon"></i>
+                                            <p>{{ $child->menu_name }}</p>
+                                        </a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @endif
+                    </li>
+                @endforeach
+
+
+                <div style="margin-top: 80px;"></div>
+
+
 
 
           

@@ -1,3 +1,6 @@
+>
+
+
 <script>
   function isNumber(evt) {
    evt = (evt) ? evt : window.event;
@@ -7,6 +10,27 @@
    }
    return true;
 }
+
+
+
+$('.loglog').on('click', function() {
+        Swal.fire({
+            title: 'Are you sure to logout ?',
+            type: 'warning',
+            showCancelButton: true,
+            reverseButtons: true,
+            confirmButtonColor: '#30347a',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'Cancel',
+        }).then((result) => {
+            if (result.value === true) {
+                $('#logout-form').submit()
+            }
+        })
+    })
+
+      
 </script>
 
 
