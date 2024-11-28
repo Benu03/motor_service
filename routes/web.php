@@ -59,6 +59,19 @@ Route::group(['middleware' => ['session_key']],function(){
     Route::get('/vehicle-check', [TestController::class, 'tes'])->name('vehicle-check');
     Route::get('/gps-check', [TestController::class, 'tes'])->name('gps-check');
 
+    Route::get('/approval', [TestController::class, 'tes'])->name('approval');
+    Route::get('/approval-service', [TestController::class, 'tes'])->name('approval-service');
+    Route::get('/approval-direct', [TestController::class, 'tes'])->name('approval-direct');
+    Route::get('/vehicle-client', [TestController::class, 'tes'])->name('vehicle-client');
+    Route::get('/vehicle-list', [TestController::class, 'tes'])->name('vehicle-list');
+    Route::get('/vehicle-type-client', [TestController::class, 'tes'])->name('vehicle-type-client');
+    Route::get('/service-bengkel', [TestController::class, 'tes'])->name('service-bengkel');
+    Route::get('/service-list-bengkel', [TestController::class, 'tes'])->name('service-list-bengkel');
+    Route::get('/spk-history', [TestController::class, 'tes'])->name('spk-history');
+
+
+    
+
 
 
 
