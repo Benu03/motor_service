@@ -19,6 +19,10 @@
                                             {{ Session::get('user')['wa_number'] }}
                                         </a>
                                     </p>
+
+                                    <p class="text-white mt-2 mb-0 fw-bold">
+                                        {{ Session::get('modules')['role'] }}
+                                    </p>
                                 </div>
                                 <div class="col-md-8">
                                     <div class="card-body p-4">
