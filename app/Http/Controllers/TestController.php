@@ -18,11 +18,15 @@ class TestController extends Controller
     public function tes(Request $request)
     {
        
-        $data['module'] = Session::get('modules');
-        $data['user'] = Session::get('user_module');
+        $data = [   'title' => 'Forbidden',
+                    'user' =>  Session::get('user_module'),
+                    'module' => Session::get('modules'),
+                    'content'   => 'global/notification/forbidden'
+                ];
 
+    
+        return view('layout/wrapper',$data);
 
-        return view('dummy.index', $data);
     }
 
 

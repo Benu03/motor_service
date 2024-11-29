@@ -1,6 +1,3 @@
->
-
-
 <script>
   function isNumber(evt) {
    evt = (evt) ? evt : window.event;

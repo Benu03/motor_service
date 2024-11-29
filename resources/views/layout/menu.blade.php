@@ -14,7 +14,7 @@
     <!-- Brand Logo -->
     <a href="{{ route('dashboard') }}" class="brand-link d-flex flex-column align-items-center" style="height: auto;">
       <img id="logo_wrap" alt="TS3 Indonesia" class="brand-image-xl py-1" src="{{ asset('assets/upload/image/logo.png') }}">
-      <span id="logo_title" class="text-center" style="font-size: 22px; font-weight: bold;">TS3 Indonesia</span>
+      <span id="logo_title" class="text-center" style="font-size: 22px; font-weight: bold;">Motor Service</span>
     </a>
 
     <div class="sidebar">
