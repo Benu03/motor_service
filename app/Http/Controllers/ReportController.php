@@ -12,7 +12,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Session;
 
 
-class TestController extends Controller
+class ReportController extends Controller
 {
 
     public function index(Request $request)

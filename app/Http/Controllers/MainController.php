@@ -24,12 +24,8 @@ class MainController extends Controller
                     'module' => Session::get('modules'),
                     'content'   => 'dasboard/bengkel'
                 ];
-
-    
         return view('layout/wrapper',$data);
 
-
-  
     }
 
 

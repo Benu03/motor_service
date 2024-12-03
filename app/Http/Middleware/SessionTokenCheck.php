@@ -48,7 +48,7 @@ class SessionTokenCheck
                 'session_token' => $user['session_token'],
                 'username'      => $user['username']
             ];
-            $timestamp = Carbon::now()->format('Y-m-d H:i:s');
+            $timestamp = Carbon::now('Asia/Jakarta')->format('Y-m-d H:i:s');
             $encryptionKey = config('static.key_access') . $timestamp;
             $keyPun = hash(config('static.key_hash'), $encryptionKey);
     
@@ -106,7 +106,7 @@ class SessionTokenCheck
         ];
 
 
-        $timestamp = Carbon::now()->format('Y-m-d H:i:s');
+        $timestamp = Carbon::now('Asia/Jakarta')->format('Y-m-d H:i:s');
         $encryptionKey = config('static.key_access') . $timestamp;
         $keyPun = hash(config('static.key_hash'), $encryptionKey);
      
@@ -117,8 +117,7 @@ class SessionTokenCheck
         ])->withoutVerifying()->post(config('static.url_access_session'), $body);
 
         $responseSessionData = json_decode($responseSession ,true);
-            
-       
+
 
         if (isset($responseSessionData['success']) && $responseSessionData['success'] === false) {
             echo "<script>alert('Session anda tidak aktif');</script>";
@@ -132,7 +131,7 @@ class SessionTokenCheck
             'module' => $module['module'],
             'username' => $user['username']
         ];
-        $timestamp = Carbon::now()->format('Y-m-d H:i:s');
+        $timestamp = Carbon::now('Asia/Jakarta')->format('Y-m-d H:i:s');
         $Encryp  = config('static.key_access') . $timestamp;
         $keyPun = hash(config('static.key_hash'), $Encryp);
 
