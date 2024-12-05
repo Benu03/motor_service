@@ -9,7 +9,6 @@
 }
 
 
-
 $('.loglog').on('click', function() {
         Swal.fire({
             title: 'Are you sure to logout ?',
@@ -27,11 +26,11 @@ $('.loglog').on('click', function() {
         })
     })
 
+
+
+
       
 </script>
-
-
-
 
 
 <script>
@@ -107,106 +106,45 @@ $awal = $sek-5;
   });
 
 </script>
+
 <script>
-@if ($message = Session::get('sukses'))
-// Notifikasi
-swal ( "Berhasil" ,  "<?php echo $message ?>" ,  "success" )
-@endif
 
-@if ($message = Session::get('warning'))
-// Notifikasi
-swal ( "Oops.." ,  "<?php echo $message ?>" ,  "warning" )
-@endif
+      @if ($message = Session::get('sukses'))
+        Swal.fire({
+            title: "Berhasil",
+            text: "{{ $message }}", 
+            icon: "success",
+            timer: 2000,
+            showConfirmButton: false,
+        });
+    @endif
 
-// Popup Delete
-$(document).on("click", ".delete-link", function(e){
-  e.preventDefault();
-  url = $(this).attr("href");
-  swal({
-    title:"Yakin akan menghapus data ini?",
-    type: "warning",
-    showCancelButton: true,
-    confirmButtonClass: 'btn btn-danger',
-    cancelButtonClass: 'btn btn-success',
-    buttonsStyling: false,
-    confirmButtonText: "Delete",
-    cancelButtonText: "Cancel",
-    closeOnConfirm: false,
-    showLoaderOnConfirm: true,
-  },
-  function(isConfirm){
-    if(isConfirm){
-      $.ajax({
-        url: url,
-        success: function(resp){
-          window.location.href = url;
-        }
-      });
-    }
-    return false;
-  });
-});
-// Popup disable
-$(document).on("click", ".disable-link", function(e){
-  e.preventDefault();
-  url = $(this).attr("href");
-  swal({
-    title:"Yakin akan menonaktifkan data ini?",
-    type: "warning",
-    showCancelButton: true,
-    confirmButtonClass: 'btn btn-danger',
-    cancelButtonClass: 'btn btn-success',
-    buttonsStyling: false,
-    confirmButtonText: "Non Aktifkan",
-    cancelButtonText: "Cancel",
-    closeOnConfirm: false,
-    showLoaderOnConfirm: true,
-  },
-  function(isConfirm){
-    if(isConfirm){
-      $.ajax({
-        url: url,
-        success: function(resp){
-          window.location.href = url;
-        }
-      });
-    }
-    return false;
-  });
-});
+    @if ($message = Session::get('warning'))
+        Swal.fire({
+            title: "Oops..",
+            text: "{{ $message }}", 
+            icon: "warning",
+            confirmButtonColor: '#ff8c00',
+            timer: 2000,
+            showConfirmButton: false,
+        });
+    @endif
 
-// Popup approval
-$(document).on("click", ".approval-link", function(e){
-  e.preventDefault();
-  url = $(this).attr("href");
-  swal({
-    title:"Anda yakin ingin menyetujui data ini?",
-    type: "info",
-    showCancelButton: true,
-    confirmButtonClass: 'btn btn-danger',
-    cancelButtonClass: 'btn btn-success',
-    buttonsStyling: false,
-    confirmButtonText: "Ya, Setujui",
-    cancelButtonText: "Cancel",
-    closeOnConfirm: false,
-    showLoaderOnConfirm: true,
-  },
-  function(isConfirm){
-    if(isConfirm){
-      $.ajax({
-        url: url,
-        success: function(resp){
-          window.location.href = url;
-        }
-      });
-    }
-    return false;
-  });
-});
+    @if ($message = Session::get('error'))
+        Swal.fire({
+            title: "Error",
+            text: "{{ $message }}",
+            icon: "error",
+            timer: 2000,
+            showConfirmButton: false,
+        });
+    @endif
+
 </script>
+
 </div>
 </div>
-<!-- /.card-body -->
+
 </div>
 <!-- /.card -->
 </div>
@@ -216,12 +154,11 @@ $(document).on("click", ".approval-link", function(e){
 </section>
 <!-- /.content -->
 </div>
-<!-- /.content-wrapper -->
-<!-- /.content-wrapper -->
+
 <footer class="main-footer">
-  <strong><i class="fas fa-copyright font-italic ml-2" style="font-family: Calibri, sans-serif;">
+  <strong><i class="fas fa-copyright"></i>
     <a href="javascript:void(0)"> TS3 Indonesia <?= date('Y'); ?> </a> 
-  </i></strong>
+  </strong>
 
 
 </footer>
@@ -253,9 +190,7 @@ $(document).on("click", ".approval-link", function(e){
 <script src="{{ asset('assets/admin/plugins/datatables-bs4/js/dataTables.bootstrap4.js') }}"></script>
 <!-- Sparkline -->
 <script src="{{ asset('assets/admin/plugins/sparklines/sparkline.js') }}"></script>
-<!-- Tempusdominus Bootstrap 4 -->
-{{-- <script src="{{ asset('assets/admin/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js') }}"></script> --}}
-<!-- Summernote -->
+>
 <script src="{{ asset('assets/admin/plugins/summernote/summernote-bs4.min.js') }}"></script>
 <!-- tinymce -->
   <script src="{{ asset('assets/ckeditor/ckeditor.js') }}" type="text/javascript"></script>
@@ -267,59 +202,7 @@ $(document).on("click", ".approval-link", function(e){
 <script src="{{ asset('assets/admin/dist/js/adminlte.js') }}"></script>
 
   
-<!-- Page Script -->
-<script>
-  $(function () {
 
-    $('select:not(.normal)').each(function () {
-                $(this).select2({
-                    dropdownParent: $(this).parent(),
-                    theme: 'bootstrap4',
-                    width: '100%'
-                });
-            });
-
-    
-    $('.mselect2').select2({
-      dropdownParent: $('.Tambah')
-    });
-   
-    $('.checkbox-toggle').click(function () {
-      var clicks = $(this).data('clicks')
-      if (clicks) {
-        //Uncheck all checkboxes
-        $('.mailbox-messages input[type=\'checkbox\']').prop('checked', false)
-        $('.checkbox-toggle .far.fa-check-square').removeClass('fa-check-square').addClass('fa-square')
-      } else {
-        //Check all checkboxes
-        $('.mailbox-messages input[type=\'checkbox\']').prop('checked', true)
-        $('.checkbox-toggle .far.fa-square').removeClass('fa-square').addClass('fa-check-square')
-      }
-      $(this).data('clicks', !clicks)
-    })
-
-    //Handle starring for glyphicon and font awesome
-    $('.mailbox-star').click(function (e) {
-      e.preventDefault()
-      //detect type
-      var $this = $(this).find('a > i')
-      var glyph = $this.hasClass('glyphicon')
-      var fa    = $this.hasClass('fa')
-
-      //Switch states
-      if (glyph) {
-        $this.toggleClass('glyphicon-star')
-        $this.toggleClass('glyphicon-star-empty')
-      }
-
-      if (fa) {
-        $this.toggleClass('fa-star')
-        $this.toggleClass('fa-star-o')
-      }
-    })
-  })
-</script>
-<!-- AdminLTE for demo purposes -->
 <script src="{{ asset('assets/admin/dist/js/demo.js') }}"></script>
 <!-- page script -->
 <script>

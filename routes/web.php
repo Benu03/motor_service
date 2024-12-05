@@ -55,9 +55,9 @@ Route::group(['middleware' => ['session_key']],function(){
     Route::get('/vehicle-type', [MasterController::class, 'index'])->name('vehicle-type');
 
 
-    Route::get('/spk-proses', [SPKController::class, 'index'])->name('spk-proses');
+    Route::post('/spk-proses', [SPKController::class, 'SpkProcess'])->name('spk-proses');
     Route::get('/spk-history', [SPKController::class, 'index'])->name('spk-history');
-    Route::get('/spk-status', [SPKController::class, 'index'])->name('spk-status');
+    Route::get('/spk-status', [SPKController::class, 'SpkStatus'])->name('spk-status');
     Route::get('/spk-list-service', [SPKController::class, 'index'])->name('spk-list-service');
 
 
