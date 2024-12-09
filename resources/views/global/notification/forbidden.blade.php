@@ -3,6 +3,6 @@
         <img class="img-fluid" 
              src="{{ asset('assets/upload/image/forbidden.png') }}" 
              alt="Forbidden Image" 
-             style="margin-top: 80px; margin-bottom: 80px;">
+             style="margin-top: 80px; margin-bottom: 80px; border-radius: 50px;">
     </div>
 </div>

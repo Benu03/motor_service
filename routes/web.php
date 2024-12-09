@@ -58,12 +58,18 @@ Route::group(['middleware' => ['session_key']],function(){
     Route::post('/spk-proses', [SPKController::class, 'SpkProcess'])->name('spk-proses');
     Route::get('/spk-history', [SPKController::class, 'index'])->name('spk-history');
     Route::get('/spk-status', [SPKController::class, 'SpkStatus'])->name('spk-status');
-    Route::get('/spk-list-service', [SPKController::class, 'index'])->name('spk-list-service');
+    Route::get('/spk-list-service', [SPKController::class, 'SpkListService'])->name('spk-list-service');
+    Route::get('/get-spk-list-service', [SPKController::class, 'GetSpkListService'])->name('get-spk-list-service');
+    Route::get('/get-spk-list-service-detail', [SPKController::class, 'GetSpkListServiceDetail'])->name('get-spk-list-service-detail');
+    Route::get('/spk-service-proses', [SPKController::class, 'SpkServiceProcess'])->name('spk-service-proses');
+    
 
 
     Route::get('/invoice', [InvoiceController::class, 'index'])->name('invoice');
-    Route::get('/invoice-bengkel', [InvoiceController::class, 'index'])->name('invoice-bengkel');
-    Route::get('/invoice-client', [InvoiceController::class, 'index'])->name('invoice-client');
+    Route::get('/invoice-bengkel', [InvoiceController::class, 'InvoiceBengkel'])->name('invoice-bengkel');
+    Route::get('/invoice-client', [InvoiceController::class, 'InvoiceClient'])->name('invoice-client');
+    Route::get('/invoice-client-create', [InvoiceController::class, 'InvoiceClientCreate'])->name('invoice-client-create');
+    Route::get('/invoice-client-create-gps', [InvoiceController::class, 'InvoiceClientCreateGps'])->name('invoice-client-create-gps');
 
 
 
