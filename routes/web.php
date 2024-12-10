@@ -36,6 +36,37 @@ Route::group(['middleware' => ['session_key']],function(){
     Route::post('/update-notif', [MainController::class, 'updateNotifIsread'])->name('updatenotif');
 
 
+    Route::post('/spk-proses', [SPKController::class, 'SpkProcess'])->name('spk-proses');
+    Route::get('/spk-history', [SPKController::class, 'index'])->name('spk-history');
+    Route::get('/spk-status', [SPKController::class, 'SpkStatus'])->name('spk-status');
+    Route::get('/spk-list-service', [SPKController::class, 'SpkListService'])->name('spk-list-service');
+    Route::get('/get-spk-list-service', [SPKController::class, 'GetSpkListService'])->name('get-spk-list-service');
+    Route::get('/get-spk-list-service-detail', [SPKController::class, 'GetSpkListServiceDetail'])->name('get-spk-list-service-detail');
+    Route::get('/spk-service-proses', [SPKController::class, 'SpkServiceProcess'])->name('spk-service-proses');
+    
+
+    Route::get('/invoice', [InvoiceController::class, 'index'])->name('invoice');
+    Route::get('/invoice-bengkel', [InvoiceController::class, 'InvoiceBengkel'])->name('invoice-bengkel');
+    Route::get('/invoice-client', [InvoiceController::class, 'InvoiceClient'])->name('invoice-client');
+    Route::get('/invoice-client-create', [InvoiceController::class, 'InvoiceClientCreate'])->name('invoice-client-create');
+    Route::get('/invoice-client-create-gps', [InvoiceController::class, 'InvoiceClientCreateGps'])->name('invoice-client-create-gps');
+
+
+    Route::get('/other-feature', [FeatureController::class, 'index'])->name('other-feature');
+    Route::get('/vehicle-check', [FeatureController::class, 'VehicleCheck'])->name('vehicle-check');
+    Route::get('/gps-check', [FeatureController::class, 'GpsCheck'])->name('gps-check');
+
+
+    Route::get('/report', [ReportController::class, 'index'])->name('report');
+    Route::get('/report-history-service', [ReportController::class, 'ReportHistoryService'])->name('report-history-service');
+    Route::get('/report-realisasi-spk', [ReportController::class, 'ReportRealisasiSpk'])->name('report-realisasi-spk');
+    Route::get('/report-rekap-invoice', [ReportController::class, 'ReportRekapInvoice'])->name('report-rekap-invoice');
+    Route::get('/report-spk-history', [ReportController::class, 'ReportSpkHistory'])->name('report-spk-history');
+    Route::get('/report-summary-bengkel', [ReportController::class, 'ReportSummaryBengkel'])->name('report-summary-bengkel');
+    Route::get('/report-service-duedate', [ReportController::class, 'ReportServicedueDate'])->name('report-service-duedate');
+    Route::get('/report-laba-rugi', [ReportController::class, 'ReportLabaRugi'])->name('report-laba-rugi');
+
+
     Route::get('/direct-service', [ServicesController::class, 'directService'])->name('direct-service');
     Route::post('/direct-service-process', [ServicesController::class, 'directServiceProcess'])->name('direct-service-process');
     Route::get('/service-list-bengkel', [TestController::class, 'index'])->name('service-list-bengkel');
@@ -46,53 +77,18 @@ Route::group(['middleware' => ['session_key']],function(){
 
 
     Route::get('/master', [MasterController::class, 'index'])->name('master');
-    Route::get('/bengkel', [MasterController::class, 'index'])->name('bengkel');
-    Route::get('/price-service', [MasterController::class, 'index'])->name('price-service');
-    Route::get('/regional', [MasterController::class, 'index'])->name('regional');
-    Route::get('/area', [MasterController::class, 'index'])->name('area');
-    Route::get('/branch', [MasterController::class, 'index'])->name('branch');
-    Route::get('/vehicle', [MasterController::class, 'index'])->name('vehicle');
-    Route::get('/vehicle-type', [MasterController::class, 'index'])->name('vehicle-type');
-
-
-    Route::post('/spk-proses', [SPKController::class, 'SpkProcess'])->name('spk-proses');
-    Route::get('/spk-history', [SPKController::class, 'index'])->name('spk-history');
-    Route::get('/spk-status', [SPKController::class, 'SpkStatus'])->name('spk-status');
-    Route::get('/spk-list-service', [SPKController::class, 'SpkListService'])->name('spk-list-service');
-    Route::get('/get-spk-list-service', [SPKController::class, 'GetSpkListService'])->name('get-spk-list-service');
-    Route::get('/get-spk-list-service-detail', [SPKController::class, 'GetSpkListServiceDetail'])->name('get-spk-list-service-detail');
-    Route::get('/spk-service-proses', [SPKController::class, 'SpkServiceProcess'])->name('spk-service-proses');
-    
-
-
-    Route::get('/invoice', [InvoiceController::class, 'index'])->name('invoice');
-    Route::get('/invoice-bengkel', [InvoiceController::class, 'InvoiceBengkel'])->name('invoice-bengkel');
-    Route::get('/invoice-client', [InvoiceController::class, 'InvoiceClient'])->name('invoice-client');
-    Route::get('/invoice-client-create', [InvoiceController::class, 'InvoiceClientCreate'])->name('invoice-client-create');
-    Route::get('/invoice-client-create-gps', [InvoiceController::class, 'InvoiceClientCreateGps'])->name('invoice-client-create-gps');
-
-
-
-    Route::get('/other-feature', [FeatureController::class, 'index'])->name('other-feature');
-    Route::get('/vehicle-check', [FeatureController::class, 'index'])->name('vehicle-check');
-    Route::get('/gps-check', [FeatureController::class, 'index'])->name('gps-check');
-
-
-
-    Route::get('/report', [ReportController::class, 'index'])->name('report');
-    Route::get('/report-history-service', [ReportController::class, 'index'])->name('report-history-service');
-    Route::get('/report-realisasi-spk', [ReportController::class, 'index'])->name('report-realisasi-spk');
-    Route::get('/report-rekap-invoice', [ReportController::class, 'index'])->name('report-rekap-invoice');
-    Route::get('/report-spk-history', [ReportController::class, 'index'])->name('report-spk-history');
-    Route::get('/report-summary-bengkel', [ReportController::class, 'index'])->name('report-summary-bengkel');
-    Route::get('/report-service-duedate', [ReportController::class, 'index'])->name('report-service-duedate');
-    Route::get('/report-laba-rugi', [ReportController::class, 'index'])->name('report-laba-rugi');
- 
+    Route::get('/bengkel', [MasterController::class, 'Bengkel'])->name('bengkel');
+    Route::get('/price-service', [MasterController::class, 'PriceService'])->name('price-service');
+    Route::get('/regional', [MasterController::class, 'Regional'])->name('regional');
+    Route::get('/area', [MasterController::class, 'Area'])->name('area');
+    Route::get('/branch', [MasterController::class, 'Branch'])->name('branch');
+    Route::get('/vehicle', [MasterController::class, 'Vehicle'])->name('vehicle');
+    Route::get('/vehicle-type', [MasterController::class, 'VehicleType'])->name('vehicle-type');
 
 
     Route::get('/approval', [ApprovalController::class, 'index'])->name('approval');
-    Route::get('/approval-service', [ApprovalController::class, 'index'])->name('approval-service');
-    Route::get('/approval-direct', [ApprovalController::class, 'index'])->name('approval-direct');
+    Route::get('/approval-service', [ApprovalController::class, 'ApprovalService'])->name('approval-service');
+    Route::get('/approval-direct', [ApprovalController::class, 'ApprovalDirect'])->name('approval-direct');
 
 
 

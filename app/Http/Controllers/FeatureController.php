@@ -15,8 +15,40 @@ use Illuminate\Support\Facades\Session;
 class FeatureController extends Controller
 {
 
-    public function index(Request $request)
+    public function VehicleCheck(Request $request)
     {
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+
+            $data = array(   'title'     => 'Vehicle Check',
+                      
+                        'content'   => 'feature/admints3/vehicle_check'
+                    );
+            return view('layout/wrapper',$data);
+
+        }
+       
+        $data = [   'title' => 'Access Forbidden',
+                    'content'   => 'global/notification/forbidden'
+                ];
+
+        return view('layout/wrapper',$data);
+
+    }
+
+
+    public function GpsCheck(Request $request)
+    {
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+
+            $data = array(   'title'     => 'GPS Check',
+                      
+                            'content'   => 'feature/admints3/gps_check'
+                        );
+                return view('layout/wrapper',$data);
+
+        }
        
         $data = [   'title' => 'Access Forbidden',
                     'content'   => 'global/notification/forbidden'
