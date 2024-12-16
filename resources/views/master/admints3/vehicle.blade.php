@@ -29,7 +29,7 @@
     <button type="button" class="btn btn-secondary " data-toggle="modal" data-target="#upload">
         <i class="fas fa-file-upload"></i> Upload
     </button>
-    <a href="{{ asset('admin-ts3/export/vehicle') }}" class="btn btn-success">       
+    <a href="{{ route('vehicle-export') }}" class="btn btn-success">       
         <i class="fas fa-file-excel"></i> Export Excel
     </a>
 </div>

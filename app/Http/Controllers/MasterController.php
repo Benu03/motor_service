@@ -12,8 +12,10 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Session;
 use DataTables;
 use App\Imports\VehicleTempImport;
+use App\Exports\AdminTs3\VehicleExport;
 use Storage;
 use App\Models\Vehicle_model;
+use Illuminate\Support\Facades\File;
 
 class MasterController extends Controller
 {
@@ -731,4 +733,21 @@ class MasterController extends Controller
         return 'File berhasil di-upload, mohon untuk direview';
     }
     
+    public function VehicleExport()
+    {
+        $role = Session::get('modules')['role'] ?? null;
+                if ($role === 'ADMIN TS3') {   
+
+
+                        return Excel::download(new VehicleExport, 'VEHICLE-MVM.xlsx');
+                    }
+                    $data = [   'title' => 'Access Forbidden',
+                                'content'   => 'global/notification/forbidden'
+                            ];
+
+                    return view('layout/wrapper',$data); 
+    }
+
+
+
 }

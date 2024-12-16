@@ -88,11 +88,13 @@ Route::group(['middleware' => ['session_key']],function(){
     Route::post('/vehicle-add', [MasterController::class, 'VehicleAdd'])->name('vehicle-add');
     Route::post('/vehicle-proses', [MasterController::class, 'Vehicleproses'])->name('vehicle-proses');
     Route::get('/edit-vehicle/{data}', [MasterController::class, 'EditVehicle'])->name('edit-vehicle');
-    Route::get('/edit-vehicle-process', [MasterController::class, 'EditVehicleProcess'])->name('edit-vehicle-process');
+    Route::post('/edit-vehicle-process', [MasterController::class, 'EditVehicleProcess'])->name('edit-vehicle-process');
     Route::get('/delete-vehicle/{data}', [MasterController::class, 'deleteVehicle'])->name('delete-vehicle');
     Route::get('/vehicle-detail/{data}', [MasterController::class, 'VehicleDetail'])->name('vehicle-detail');
     Route::get('/vehicle-template-upload', [MasterController::class, 'VehicleTemplateUpload'])->name('vehicle-template-upload');
     Route::post('/vehicle-upload', [MasterController::class, 'VehicleUpload'])->name('vehicle-upload');
+    Route::get('/vehicle-export', [MasterController::class, 'VehicleExport'])->name('vehicle-export');
+    
     Route::get('/vehicle-type', [MasterController::class, 'VehicleType'])->name('vehicle-type');
     Route::post('/vehicle-type-process', [MasterController::class, 'VehicleTypeProcess'])->name('vehicle-type-process');
     Route::get('/get-vehicle-type', [MasterController::class, 'getVehicletype'])->name('get-vehicle-type');
