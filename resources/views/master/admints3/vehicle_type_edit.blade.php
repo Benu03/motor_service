@@ -8,7 +8,7 @@
     </div>
 @endif
 
-<form action="{{ asset('admin-ts3/vehicle-type/proses-edit-vehicle-type') }}" enctype="multipart/form-data" method="post" accept-charset="utf-8">
+<form action="{{ route('edit-vehicle-type-process') }}" enctype="multipart/form-data" method="post" accept-charset="utf-8">
 {{ csrf_field() }}
 <input type="hidden" name="id" value="<?php echo $vehicle_type->id ?>">
 
@@ -54,7 +54,7 @@
 		<div class="form-group pull-right btn-group">
 			<input type="submit" name="submit" class="btn btn-primary " value="Simpan Data">
 			<input type="reset" name="reset" class="btn btn-success " value="Reset">
-			<a href="{{ asset('admin-ts3/vehicle-type') }}" class="btn btn-danger">Kembali</a>
+			<a href="{{ route('vehicle-type') }}" class="btn btn-danger">Kembali</a>
 		</div>
 	</div>
 	<div class="clearfix"></div>

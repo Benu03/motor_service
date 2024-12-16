@@ -82,8 +82,24 @@ Route::group(['middleware' => ['session_key']],function(){
     Route::get('/regional', [MasterController::class, 'Regional'])->name('regional');
     Route::get('/area', [MasterController::class, 'Area'])->name('area');
     Route::get('/branch', [MasterController::class, 'Branch'])->name('branch');
+
     Route::get('/vehicle', [MasterController::class, 'Vehicle'])->name('vehicle');
+    Route::get('/get-vehicle', [MasterController::class, 'getVehicle'])->name('get-vehicle');
+    Route::post('/vehicle-add', [MasterController::class, 'VehicleAdd'])->name('vehicle-add');
+    Route::post('/vehicle-proses', [MasterController::class, 'Vehicleproses'])->name('vehicle-proses');
+    Route::get('/edit-vehicle/{data}', [MasterController::class, 'EditVehicle'])->name('edit-vehicle');
+    Route::get('/edit-vehicle-process', [MasterController::class, 'EditVehicleProcess'])->name('edit-vehicle-process');
+    Route::get('/delete-vehicle/{data}', [MasterController::class, 'deleteVehicle'])->name('delete-vehicle');
+    Route::get('/vehicle-detail/{data}', [MasterController::class, 'VehicleDetail'])->name('vehicle-detail');
+    Route::get('/vehicle-template-upload', [MasterController::class, 'VehicleTemplateUpload'])->name('vehicle-template-upload');
+    Route::post('/vehicle-upload', [MasterController::class, 'VehicleUpload'])->name('vehicle-upload');
     Route::get('/vehicle-type', [MasterController::class, 'VehicleType'])->name('vehicle-type');
+    Route::post('/vehicle-type-process', [MasterController::class, 'VehicleTypeProcess'])->name('vehicle-type-process');
+    Route::get('/get-vehicle-type', [MasterController::class, 'getVehicletype'])->name('get-vehicle-type');
+    Route::post('/vehicle-type-add', [MasterController::class, 'VehicleTypeAdd'])->name('vehicle-type-add');
+    Route::get('/edit-vehicle-type/{data}', [MasterController::class, 'EditVehicleType'])->name('edit-vehicle-type');
+    Route::post('/edit-vehicle-type-process', [MasterController::class, 'EditVehicleTypeProcess'])->name('edit-vehicle-type-process');
+    Route::get('/delete-vehicle-type/{data}', [MasterController::class, 'DeleteVehicleType'])->name('delete-vehicle-type');
 
 
     Route::get('/approval', [ApprovalController::class, 'index'])->name('approval');

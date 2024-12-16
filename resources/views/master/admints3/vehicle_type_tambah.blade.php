@@ -8,7 +8,7 @@
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 			</div>
 			<div class="modal-body">
-				<form action="{{ asset('admin-ts3/vehicle-type/tambah-vehicle-type') }}" enctype="multipart/form-data" method="post" accept-charset="utf-8">
+				<form action="{{ route('vehicle-type-add') }}" enctype="multipart/form-data" method="post" accept-charset="utf-8">
 				{{ csrf_field() }}
 
 

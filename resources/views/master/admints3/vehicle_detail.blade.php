@@ -1,8 +1,8 @@
 <p class="text-right">
-	<a href="{{ asset('admin-ts3/vehicle/edit/'.$vehicle->id) }}" class="btn btn-warning btn-sm">
+	<a href="{{ asset('edit-vehicle/'.$vehicle->id) }}" class="btn btn-warning btn-sm">
 		<i class="fa fa-edit"></i> Edit
 	</a>
-	<a href="{{ asset('admin-ts3/vehicle') }}" class="btn btn-success btn-sm">
+	<a href="{{ route('vehicle') }}" class="btn btn-success btn-sm">
 		<i class="fa fa-backward"></i> Kembali
 	</a>
 </p>

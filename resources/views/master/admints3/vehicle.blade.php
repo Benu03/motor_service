@@ -11,7 +11,7 @@
 @include('master/admints3/vehicle_tambah')
 @include('master/admints3/vehicle_upload')
 </p>
-<form action="{{ asset('admin-ts3/vehicle/proses') }}" method="post" accept-charset="utf-8">
+<form action="{{ route('vehicle-proses') }}" method="post" accept-charset="utf-8">
 {{ csrf_field() }}
 <div class="row">
 
@@ -89,7 +89,7 @@
                 }
             },
             ajax: {
-                url: "{{  asset('admin-ts3/get-vehicle') }}",
+                url: "{{  route('get-vehicle') }}",
                 type: "GET"
             },
             columns: [
