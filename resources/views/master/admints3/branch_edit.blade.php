@@ -8,7 +8,7 @@
     </div>
 @endif
 
-<form action="{{ asset('admin-ts3/branch/proses_edit') }}" enctype="multipart/form-data" method="post" accept-charset="utf-8">
+<form action="{{ url('edit-branch-process') }}" enctype="multipart/form-data" method="post" accept-charset="utf-8">
 {{ csrf_field() }}
 <input type="hidden" name="id" value="<?php echo $branch->id ?>">
  
@@ -40,7 +40,7 @@
 		<select name="pic_branch" id="pic_branch" class="form-control select2">
 			
 			<?php foreach($userbranch as $ub) { ?>
-			  <option value="<?php echo $ub->username ?>"  <?php if($branch->pic_branch==$ub->username) { echo 'selected'; } ?>><?php echo $ub->nama ?></option>
+			  <option value="<?php echo $ub->username ?>"  <?php if($branch->pic_branch==$ub->username) { echo 'selected'; } ?>><?php echo $ub->fullname ?></option>
 			<?php } ?>
 		  </select>
 	</div>
@@ -69,7 +69,7 @@
 		<div class="form-group pull-right btn-group">
 			<input type="submit" name="submit" class="btn btn-primary " value="Simpan Data">
 			<input type="reset" name="reset" class="btn btn-success " value="Reset">
-			<a href="{{ asset('admin-ts3/branch') }}" class="btn btn-danger">Kembali</a>
+			<a href="{{ url('branch') }}" class="btn btn-danger">Kembali</a>
 		</div>
 	</div>
 	<div class="clearfix"></div>

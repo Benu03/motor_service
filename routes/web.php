@@ -81,8 +81,18 @@ Route::group(['middleware' => ['session_key']],function(){
     Route::get('/price-service', [MasterController::class, 'PriceService'])->name('price-service');
     Route::get('/regional', [MasterController::class, 'Regional'])->name('regional');
     Route::get('/area', [MasterController::class, 'Area'])->name('area');
+    Route::post('/get-area-client', [MasterController::class, 'getAreaClient'])->name('get-area-client');
+    Route::post('/get-branch-pic-client', [MasterController::class, 'getBranchpicClient'])->name('get-branch-pic-client');
     Route::get('/branch', [MasterController::class, 'Branch'])->name('branch');
-
+    Route::post('/branch-add', [MasterController::class, 'BranchAdd'])->name('branch-add');
+    Route::post('/branch-proses', [MasterController::class, 'Branchproses'])->name('branch-proses');
+    Route::get('/get-branch', [MasterController::class, 'getBranch'])->name('get-branch');
+    Route::get('/branch-export', [MasterController::class, 'BranchExport'])->name('branch-export');
+    Route::get('/branch-upload-template', [MasterController::class, 'BranchUploadTemp'])->name('branch-upload-template');
+    Route::post('/branch-upload-process', [MasterController::class, 'BranchUploadProcess'])->name('branch-upload-process');
+    Route::get('/edit-branch/{data}', [MasterController::class, 'EditBranch'])->name('edit-branch');
+    Route::post('/edit-branch-process', [MasterController::class, 'EditBranchProcess'])->name('edit-branch-process');
+    Route::get('/delete-branch/{data}', [MasterController::class, 'deleteBranch'])->name('delete-branch');
     Route::get('/vehicle', [MasterController::class, 'Vehicle'])->name('vehicle');
     Route::get('/get-vehicle', [MasterController::class, 'getVehicle'])->name('get-vehicle');
     Route::post('/vehicle-add', [MasterController::class, 'VehicleAdd'])->name('vehicle-add');
@@ -94,7 +104,6 @@ Route::group(['middleware' => ['session_key']],function(){
     Route::get('/vehicle-template-upload', [MasterController::class, 'VehicleTemplateUpload'])->name('vehicle-template-upload');
     Route::post('/vehicle-upload', [MasterController::class, 'VehicleUpload'])->name('vehicle-upload');
     Route::get('/vehicle-export', [MasterController::class, 'VehicleExport'])->name('vehicle-export');
-    
     Route::get('/vehicle-type', [MasterController::class, 'VehicleType'])->name('vehicle-type');
     Route::post('/vehicle-type-process', [MasterController::class, 'VehicleTypeProcess'])->name('vehicle-type-process');
     Route::get('/get-vehicle-type', [MasterController::class, 'getVehicletype'])->name('get-vehicle-type');

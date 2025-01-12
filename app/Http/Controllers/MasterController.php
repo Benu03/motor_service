@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Session;
 use DataTables;
 use App\Imports\VehicleTempImport;
 use App\Exports\AdminTs3\VehicleExport;
+use App\Exports\AdminTs3\BranchExport;
+use App\Models\Branchmodel;
 use Storage;
 use App\Models\Vehicle_model;
 use Illuminate\Support\Facades\File;
@@ -130,6 +132,7 @@ class MasterController extends Controller
 
     public function Branch(Request $request)
     {
+
         $role = Session::get('modules')['role'] ?? null;
         if ($role === 'ADMIN TS3') {
 
@@ -137,7 +140,7 @@ class MasterController extends Controller
 
             $data = array(  'title'     => 'Branch',
                              'client'      => $client,
-                        'content'   => 'master/admints3/branch'
+                            'content'   => 'master/admints3/branch'
                     );
             
             return view('layout/wrapper',$data);
@@ -151,6 +154,380 @@ class MasterController extends Controller
         return view('layout/wrapper',$data);
 
     }
+
+    public function BranchExport()
+    {
+
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+        return Excel::download(new BranchExport, 'BRANCH-MVM.xlsx');
+        }
+        
+        $data = [   'title' => 'Access Forbidden',
+                    'content'   => 'global/notification/forbidden'
+                ];
+
+        return view('layout/wrapper',$data);
+    }
+
+    public function BranchUploadTemp()
+    {
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+
+            $file_path = storage_path('data/template/BRANCH_LIST_TEMPLATE.xlsx');
+            return response()->download($file_path);
+        }
+        
+        $data = [   'title' => 'Access Forbidden',
+                    'content'   => 'global/notification/forbidden'
+                ];
+
+        return view('layout/wrapper',$data);
+
+    }
+
+    
+    public function BranchUploadProcess(Request $request)
+    {
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+
+
+                    request()->validate([
+                        'branch'   => 'file|mimes:xlsx,xls|max:5120|required',
+                        ]);
+
+                        $branch_file       = $request->file('branch');
+
+                        try
+                        {
+                            DB::connection('mtr')->beginTransaction();
+                            $nama_file = date("ymd_s").'_'.$branch_file->getClientOriginalName();
+                            $dir_file =storage_path('data/branch/'.date("Y").'/'.date("m").'/');
+                            // $DirFile ='data/spk/';
+                            if (!file_exists($dir_file)) {
+                            File::makeDirectory($dir_file,0777,true);
+                            }
+
+                            Log::info('done upload '.$nama_file);
+
+                            Excel::import(new BranchTempImport(), $branch_file);
+                            $branch_file->move($dir_file,$nama_file);
+
+                            DB::connection('mtr')->commit();
+                        }
+                        catch (\Exception $e) {
+                            DB::connection('ts3')->rollback();
+                            return redirect('branch')->with(['warning' => $e]);
+                        }    
+
+                        $return =  $this->postingBranch($username = Session()->get('username')); 
+
+
+                        return redirect('branch')->with(['sukses' => $return]);  
+                    }
+        
+                    $data = [   'title' => 'Access Forbidden',
+                                'content'   => 'global/notification/forbidden'
+                            ];
+            
+                    return view('layout/wrapper',$data);
+
+
+    }
+
+    public function postingBranch($username)
+    {
+     
+        $Checkbranchtemp =  Branchmodel::GetBranchTemp($username); 
+
+        foreach($Checkbranchtemp as $x => $val) 
+        {
+
+             $resultArray = json_decode(json_encode($val), true);
+             $checkbranch = DB::connection('mtr')->table('mst.mst_branch')->where('branch',$resultArray['branch'])->first();
+
+             if(!isset($checkbranch))
+             {      
+                $clientCheck = DB::connection('mtr')->table('mst.mst_client')->select('id')->where('client_name',$resultArray['client'])->first();
+                if(isset($clientCheck))
+                {
+
+                    $checkregional = DB::connection('mtr')->table('mst.mst_regional')->where('regional',$resultArray['regional'])->first();
+                    
+
+                    if(isset($checkregional))
+                    {
+                        $checkarea = DB::connection('mtr')->table('mst.mst_area')->where('area',$resultArray['area'])->first();
+                        if(isset($checkarea))
+                        {
+
+                            DB::connection('mtr')->table('mst.mst_branch')->insert([
+                                'mst_area_id'   => $checkarea->id,
+                                'branch'	=> $resultArray['branch'],
+                                'pic_branch'	=> $resultArray['pic_branch'],
+                                'phone'	=> $resultArray['phone'],
+                                'address'	=> $resultArray['address'],
+                                'created_date'    => date("Y-m-d h:i:sa"),
+                                'create_by'     => $username
+                            ]);
+                        }
+                        else
+                        {
+                            $idare =   DB::connection('mtr')->table('mst.mst_area')->insertGetId([
+                                'mst_regional_id'   => $checkregional->id,
+                                'area'	=> $resultArray['area'],
+                                'created_date'    => date("Y-m-d h:i:sa"),
+                                'create_by'     => $$username
+                            ]);
+    
+                            DB::connection('mtr')->table('mst.mst_branch')->insert([
+                                'mst_area_id'   => $idare,
+                                'branch'	=> $resultArray['branch'],
+                                'pic_branch'	=> $resultArray['pic_branch'],
+                                'phone'	=> $resultArray['phone'],
+                                'address'	=> $resultArray['address'],
+                                'created_date'    => date("Y-m-d h:i:sa"),
+                                'create_by'     => $username
+                            ]);
+                        }
+
+                    }
+                    else 
+                    {
+                        $idreg = DB::connection('mtr')->table('mst.mst_regional')->insertGetId([
+                            'mst_client_id'   => $clientCheck->id,
+                            'regional'	=> $resultArray['regional'],
+                            'created_date'    => date("Y-m-d h:i:sa"),
+                            'create_by'     => $username
+                        ]);
+
+                        $idare =   DB::connection('mtr')->table('mst.mst_area')->insertGetId([
+                            'mst_regional_id'   => $idreg,
+                            'area'	=> $resultArray['area'],
+                            'created_date'    => date("Y-m-d h:i:sa"),
+                            'create_by'     => $username
+                        ]);
+
+                        DB::connection('mtr')->table('mst.mst_branch')->insert([
+                            'mst_area_id'   => $idare,
+                            'branch'	=> $resultArray['branch'],
+                            'pic_branch'	=> $resultArray['pic_branch'],
+                            'phone'	=> $resultArray['phone'],
+                            'address'	=> $resultArray['address'],
+                            'created_date'    => date("Y-m-d h:i:sa"),
+                            'create_by'     => $username
+                        ]);
+
+
+                    }
+
+
+                }
+                else
+                {
+                
+                    Log::info('Client Belum Terdaftar '.$resultArray['client']);
+                    return 'Client Belum Terdaftar '.$resultArray['client'];
+                }
+
+             }
+             else
+             {
+                 Log::info('Branch Sudah ada '.$resultArray['branch']);
+                 return 'Branch Sudah ada '.$resultArray['branch'];
+             }
+
+
+        }
+        DB::connection('mtr')->table('tmp.tmp_branch')->where('user_upload',$username)->delete();
+
+        return 'File berhasil Di Upload, mohon Untuk Di Review';
+
+    }
+    
+
+    public function getBranch(Request $request)
+    {
+
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+
+                        if ($request->ajax()) {
+                            $branch 	= DB::connection('mtr')->table('mst.v_branch')->get();
+                            return DataTables::of($branch)->addColumn('action', function($row){
+                                $btn = '<div class="btn-group">
+                                <a href="'. asset('edit-branch/'.$row->id).'" 
+                                    class="btn btn-warning btn-sm"><i class="fa fa-edit"></i></a>
+                                <a href="'. asset('delete-branch/'.$row->id).'"  class="btn btn-danger btn-sm">
+                                        <i class="fa fa-trash"></i></a>
+                                </div>';
+                                    return $btn;
+                                    })->addColumn('check', function($row){
+                                        $check = ' <td class="text-center">
+                                                    <div class="icheck-primary">
+                                                    <input type="checkbox" class="icheckbox_flat-blue " name="id[]" value="'.$row->id.'" id="check'.$row->id.'">
+                                                <label for="check'.$row->id.'"></label>
+                                                    </div>
+                                                </td>';
+                                        return $check;
+                                    })
+                            ->rawColumns(['action','check'])->make(true);
+                            }
+                    }
+        
+        $data = [   'title' => 'Access Forbidden',
+                    'content'   => 'global/notification/forbidden'
+                ];
+
+        return view('layout/wrapper',$data);
+
+    }
+
+    public function Branchproses(Request $request)
+    {
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {      
+       
+                if(isset($_POST['hapus'])) {
+                    $id       = $request->id;
+            
+                    for($i=0; $i < sizeof($id);$i++) {
+                            
+                    DB::connection('mtr')->table('mst.mst_branch')->where('id',$id[$i])->delete();
+                    
+                    }
+                
+                    return redirect('branch')->with(['sukses' => 'Data telah dihapus']);
+                }
+            }
+            $data = [   'title' => 'Access Forbidden',
+                        'content'   => 'global/notification/forbidden'
+                    ];
+    
+            return view('layout/wrapper',$data);
+    }
+
+    
+    public function BranchAdd(Request $request)
+    {
+    	
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+                request()->validate([
+                                    'mst_area_id' => 'required',
+                                    'branch' 	   => 'required|unique:mtr.mst.mst_branch',
+                                    'pic_branch' => 'required',
+                                    ]);
+
+
+                DB::connection('mtr')->table('mst.mst_branch')->insert([
+                    'mst_area_id'   => $request->mst_area_id,
+                    'branch'	=> $request->branch,
+                    'pic_branch'	=> $request->pic_branch,
+                    'phone'	=> $request->phone,
+                    'address'	=> $request->address,
+                    'created_date'    => date("Y-m-d h:i:sa"),
+                    'create_by'     => $request->session()->get('username')
+                ]);
+
+
+                return redirect('branch')->with(['sukses' => 'Data telah ditambah']);
+
+            }
+       
+            $data = [   'title' => 'Access Forbidden',
+                        'content'   => 'global/notification/forbidden'
+                    ];
+    
+            return view('layout/wrapper',$data);
+
+                
+    }
+
+    public function EditBranch($id)
+    {
+          
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+            $branch 	= DB::connection('mtr')->table('mst.v_branch')->where('id',$id)->first();
+            $area 	= DB::connection('mtr')->table('mst.v_area')->get();
+            $user_branch 	= DB::connection('sso')->table('auth.v_auth_user_module')
+                                ->where('module','MOTOR SERVICE')
+                                ->where('role','ADMIN CLIENT')
+                                ->get();
+     
+		    $data = array(  'title'         => 'Edit Branch',
+                            'area'          => $area,
+                            'branch'        => $branch,
+                            'userbranch'      => $user_branch,
+                            'content'       => 'master/admints3/branch_edit'
+                    );
+        
+                    return view('layout/wrapper',$data);
+
+            }
+       
+            $data = [   'title' => 'Access Forbidden',
+                        'content'   => 'global/notification/forbidden'
+                    ];
+    
+            return view('layout/wrapper',$data);
+
+    }
+
+
+    public function EditBranchProcess(Request $request)
+    {
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+
+                        request()->validate([
+                                            'mst_area_id'     => 'required',
+                                            'branch' => 'required',
+                                            'pic_branch' => 'required',
+                                            ]);
+
+                                            DB::connection('mtr')->table('mst.mst_branch')->where('id',$request->id)->update([
+                                                'mst_area_id'   => $request->mst_area_id,
+                                                'branch'	    => $request->branch,
+                                                'pic_branch'	=> $request->pic_branch,
+                                                'phone'	=> $request->phone,
+                                                'address'	=> $request->address,
+                                                'updated_at'    => date("Y-m-d h:i:sa"),
+                                                'update_by'     => $request->session()->get('username')
+                                            ]);   
+                        return redirect('branch')->with(['sukses' => 'Data telah diupdate']);   
+            }
+       
+                    $data = [   'title' => 'Access Forbidden',
+                                'content'   => 'global/notification/forbidden'
+                            ];
+            
+                    return view('layout/wrapper',$data);
+        
+        
+    }
+
+    public function deleteBranch($id)
+    {
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+
+                DB::connection('mtr')->table('mst.mst_branch')->where('id',$id)->delete();
+                return redirect('branch')->with(['sukses' => 'Data telah dihapus']);
+
+        }
+        
+        $data = [   'title' => 'Access Forbidden',
+                    'content'   => 'global/notification/forbidden'
+                ];
+
+        return view('layout/wrapper',$data);
+
+    }
+
 
     public function Vehicle(Request $request)
     {
@@ -429,7 +806,6 @@ class MasterController extends Controller
 
             return view('layout/wrapper',$data);
     }
-
        
 
     public function VehicleAdd(Request $request)
@@ -554,7 +930,6 @@ class MasterController extends Controller
     }
 
 
-
     public function deleteVehicle($id)
     {
         $role = Session::get('modules')['role'] ?? null;
@@ -570,7 +945,6 @@ class MasterController extends Controller
 
         return view('layout/wrapper',$data);            
     }
-
 
 
     public function VehicleDetail($id)
@@ -593,7 +967,6 @@ class MasterController extends Controller
         return view('layout/wrapper',$data);       
     }
     
-   
 
     public function VehicleTemplateUpload()
     {
@@ -657,7 +1030,6 @@ class MasterController extends Controller
             
                     return view('layout/wrapper',$data); 
     }
-
 
 
     private function Postingvehicle($username)
@@ -748,6 +1120,54 @@ class MasterController extends Controller
                     return view('layout/wrapper',$data); 
     }
 
+
+    
+
+    public function getAreaClient()
+    {
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {  
+                  
+                    $client = $_POST['client'];
+                    log::info($client);
+
+                    $area = DB::connection('mtr')->table('mst.v_area')->where('client_name',$client)->pluck('id', 'area_slug');
+                
+
+                    return response()->json($area);
+            }
+            $data = [   'title' => 'Access Forbidden',
+            'content'   => 'global/notification/forbidden'
+                ];
+
+        return view('layout/wrapper',$data);
+     
+    }
+
+
+    public function getBranchpicClient()
+    {
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {  
+                        $client = $_POST['client'];
+                    
+                        $pic = DB::connection('sso')->table('auth.v_auth_user_module')
+                        ->where('module','MOTOR SERVICE')
+                        ->where('role','ADMIN CLIENT')
+                        // ->where('entity',$client)
+                        ->select('username', 'fullname', 'entity')
+                        ->get();
+
+                        return response()->json($pic);
+                      
+            }
+            $data = [   'title' => 'Access Forbidden',
+            'content'   => 'global/notification/forbidden'
+                ];
+
+        return view('layout/wrapper',$data);
+     
+    }
 
 
 }

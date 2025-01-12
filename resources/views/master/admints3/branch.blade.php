@@ -11,7 +11,7 @@
   @include('master/admints3/branch_tambah')
   @include('master/admints3/branch_upload')
 </p>
-<form action="{{ asset('admin-ts3/branch/proses') }}" method="post" accept-charset="utf-8">
+<form action="{{ url('branch-proses') }}" method="post" accept-charset="utf-8">
 {{ csrf_field() }}
 <div class="row">
 
@@ -29,7 +29,7 @@
     <button type="button" class="btn btn-secondary " data-toggle="modal" data-target="#upload">
         <i class="fas fa-file-upload"></i> Upload
     </button>
-    <a href="{{ asset('admin-ts3/export/branch') }}" class="btn btn-success">       
+    <a href="{{ url('branch-export') }}" class="btn btn-success">       
         <i class="fas fa-file-excel"></i> Export Excel
     </a>
 </div>
@@ -85,7 +85,7 @@
                         }
                     },
                     ajax: {
-                        url:"{{  asset('admin-ts3/get-branch') }}",
+                        url:"{{  url('get-branch') }}",
                         type: "GET"
                              
                     },

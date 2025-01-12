@@ -8,7 +8,7 @@
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 			</div>
 			<div class="modal-body">
-				<form action="{{ asset('admin-ts3/branch/tambah') }}" enctype="multipart/form-data" method="post" accept-charset="utf-8">
+				<form action="{{ url('branch-add') }}" enctype="multipart/form-data" method="post" accept-charset="utf-8">
 				{{ csrf_field() }}
 				
 
@@ -98,7 +98,7 @@
 				'X-CSRF-TOKEN': '{{ csrf_token() }}'
 			},
 		 type: "POST",
-		 url: "{{ asset('admin-ts3/get-area-client')}}", 
+		 url: "{{ url('get-area-client')}}", 
 		 data:{client:client},      
 		 dataType: "JSON",                  
 		 success: function(data){   
@@ -125,14 +125,18 @@
 				'X-CSRF-TOKEN': '{{ csrf_token() }}'
 			},
 		 type: "POST",
-		 url: "{{ asset('admin-ts3/get-pic-client')}}", 
+		 url: "{{ url('get-branch-pic-client')}}", 
 		 data:{client:client},      
 		 dataType: "JSON",                  
 		 success: function(data){   
 			$('#pic_branch').empty();
-			$.each(data, function (username, nama) {
-				$('#pic_branch').append(new Option(username,nama))
-			})
+			$.each(data, function(index, item) {
+				// Kombinasikan fullname dan entity untuk label
+				let label = `${item.fullname} - ${item.entity}`;
+				
+				// Tambahkan opsi ke dropdown
+				$('#pic_branch').append(new Option(label, item.username));
+			});
 			
 			
 		 }

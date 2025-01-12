@@ -6,7 +6,7 @@
 
 				<h4 class="modal-title mr-4" id="myModalLabel">Upload Branch?</h4>
 				<div class="btn-group">						  
-					<a href="{{ asset('admin-ts3/template-upload-branch') }}"class="btn btn-secondary">
+					<a href="{{ route('branch-upload-template') }}"class="btn btn-secondary">
 						<i class="far fa-file-excel"></i> Download Template File Upload
 					</a>
 				
@@ -18,7 +18,7 @@
 			<div class="modal-body">
 
 			
-				<form action="{{ asset('admin-ts3/upload-branch-proses') }}" enctype="multipart/form-data" method="post" accept-charset="utf-8" id="fileUploadForm">
+				<form action="{{ route('branch-upload-proses') }}" enctype="multipart/form-data" method="post" accept-charset="utf-8" id="fileUploadForm">
 				{{ csrf_field() }}
 				
 				
