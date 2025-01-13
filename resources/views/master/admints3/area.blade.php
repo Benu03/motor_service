@@ -10,7 +10,7 @@
 <p>
   @include('master/admints3/area_tambah')
 </p>
-<form action="{{ asset('admin-ts3/area/proses') }}" method="post" accept-charset="utf-8">
+<form action="{{ route('area-proses') }}" method="post" accept-charset="utf-8">
 {{ csrf_field() }}
 <div class="row">
 
@@ -26,7 +26,7 @@
 </div>
 
 <div class="col-md-4 text-right">
-    <a href="{{ asset('admin-ts3/export/area') }}" class="btn btn-success">       
+    <a href="{{ route('area-export') }}" class="btn btn-success">       
         <i class="fas fa-file-excel"></i> Export Excel
     </a>
 </div>
@@ -82,7 +82,7 @@
                         }
                     },
                     ajax: {
-                        url:"{{  asset('admin-ts3/get-area') }}",
+                        url:"{{  url('get-area') }}",
                         type: "GET"
                              
                     },

@@ -18,7 +18,7 @@
 			<div class="modal-body">
 
 			
-				<form action="{{ route('branch-upload-proses') }}" enctype="multipart/form-data" method="post" accept-charset="utf-8" id="fileUploadForm">
+				<form action="{{ route('branch-upload-process') }}" enctype="multipart/form-data" method="post" accept-charset="utf-8" id="fileUploadForm">
 				{{ csrf_field() }}
 				
 				

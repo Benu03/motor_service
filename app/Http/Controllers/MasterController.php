@@ -155,6 +155,195 @@ class MasterController extends Controller
 
     }
 
+    public function getArea(Request $request)
+    {
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+                
+            if ($request->ajax()) {
+                $area 	= DB::connection('ts3')->table('mst.v_area')->get();
+                return DataTables::of($area)->addColumn('action', function($row){
+                    $btn = '<div class="btn-group">
+                    <a href="'. asset('admin-ts3/area/edit/'.$row->id).'" 
+                        class="btn btn-warning btn-sm"><i class="fa fa-edit"></i></a>
+                    <a href="'. asset('admin-ts3/area/delete/'.$row->id).'" class="btn btn-danger btn-sm">
+                            <i class="fa fa-trash"></i></a>
+                    </div>';
+                        return $btn;
+                        })->addColumn('check', function($row){
+                            $check = ' <td class="text-center">
+                                        <div class="icheck-primary">
+                                        <input type="checkbox" class="icheckbox_flat-blue " name="id[]" value="'.$row->id.'" id="check'.$row->id.'">
+                                    <label for="check'.$row->id.'"></label>
+                                        </div>
+                                    </td>';
+                            return $check;
+                        })
+                ->rawColumns(['action','check'])->make(true);
+       
+            }
+
+        }
+            
+        $data = [   'title' => 'Access Forbidden',
+                    'content'   => 'global/notification/forbidden'
+                ];
+
+        return view('layout/wrapper',$data);
+
+    }
+    
+
+    public function AreaExport()
+    {
+
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+         return Excel::download(new AreaExport, 'AREA-MVM.xlsx');
+        }
+        
+        $data = [   'title' => 'Access Forbidden',
+                    'content'   => 'global/notification/forbidden'
+                ];
+
+        return view('layout/wrapper',$data);
+    }
+
+    public function Areaproses(Request $request)
+    {
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {      
+       
+                if(isset($_POST['hapus'])) {
+                    $id       = $request->id;
+            
+                    for($i=0; $i < sizeof($id);$i++) {
+                            
+                    DB::connection('ts3')->table('mst.mst_area')->where('id',$id[$i])->delete();
+                    
+                    }
+                
+                    return redirect('area')->with(['sukses' => 'Data telah dihapus']);
+              
+                }
+            }
+            $data = [   'title' => 'Access Forbidden',
+                        'content'   => 'global/notification/forbidden'
+                    ];
+    
+            return view('layout/wrapper',$data);
+    }
+
+    
+    public function AreaAdd(Request $request)
+    {
+    	
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+            request()->validate([
+                'mst_regional_id' => 'required',
+                'area' 	   => 'required|unique:ts3.mst.mst_area',
+                ]);
+
+
+                DB::connection('ts3')->table('mst.mst_area')->insert([
+                'mst_regional_id'   => $request->mst_regional_id,
+                'area'	=> $request->area,
+                'created_date'    => date("Y-m-d h:i:sa"),
+                'create_by'     => $request->session()->get('username')
+                ]);
+
+
+                return redirect('area')->with(['sukses' => 'Data telah ditambah']);
+
+            }
+       
+            $data = [   'title' => 'Access Forbidden',
+                        'content'   => 'global/notification/forbidden'
+                    ];
+    
+            return view('layout/wrapper',$data);
+
+                
+    }
+
+    public function EditArea($id)
+    {
+          
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+           \
+                    $area 	= DB::connection('ts3')->table('mst.v_area')->where('id',$id)->first();
+                    $regional 	= DB::connection('ts3')->table('mst.v_regional')->get();
+        
+                   
+                   
+                    $data = array(  'title'         => 'Edit area',
+                                    'area'          => $area,
+                                    'regional'        => $regional,
+                                    'content'       => 'master/admints3/area_edit'
+                            );
+                
+
+                    return view('layout/wrapper',$data);
+
+            }
+       
+            $data = [   'title' => 'Access Forbidden',
+                        'content'   => 'global/notification/forbidden'
+                    ];
+    
+            return view('layout/wrapper',$data);
+
+    }
+
+
+    public function EditAreaProcess(Request $request)
+    {
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+
+            request()->validate([
+                'mst_regional_id'     => 'required',
+                'area' => 'required',
+                ]);
+
+                DB::connection('ts3')->table('mst.mst_area')->where('id',$request->id)->update([
+                    'mst_regional_id'   => $request->mst_regional_id,
+                    'area'	    => $request->area,
+                    'updated_at'    => date("Y-m-d h:i:sa"),
+                    'update_by'     => $request->session()->get('username')
+                ]);   
+                return redirect('area')->with(['sukses' => 'Data telah diupdate']); 
+            }
+       
+                    $data = [   'title' => 'Access Forbidden',
+                                'content'   => 'global/notification/forbidden'
+                            ];
+            
+                    return view('layout/wrapper',$data);
+        
+        
+    }
+
+    public function deleteArea($id)
+    {
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+
+            DB::connection('ts3')->table('mst.mst_area')->where('id',$id)->delete();
+                return redirect('area')->wsith(['sukses' => 'Data telah dihapus']);
+
+        }
+        
+        $data = [   'title' => 'Access Forbidden',
+                    'content'   => 'global/notification/forbidden'
+                ];
+
+        return view('layout/wrapper',$data);
+
+    }
+
     public function BranchExport()
     {
 
@@ -226,7 +415,7 @@ class MasterController extends Controller
 
 
                         return redirect('branch')->with(['sukses' => $return]);  
-                    }
+            }
         
                     $data = [   'title' => 'Access Forbidden',
                                 'content'   => 'global/notification/forbidden'

@@ -80,8 +80,20 @@ Route::group(['middleware' => ['session_key']],function(){
     Route::get('/bengkel', [MasterController::class, 'Bengkel'])->name('bengkel');
     Route::get('/price-service', [MasterController::class, 'PriceService'])->name('price-service');
     Route::get('/regional', [MasterController::class, 'Regional'])->name('regional');
-    Route::get('/area', [MasterController::class, 'Area'])->name('area');
+
     Route::post('/get-area-client', [MasterController::class, 'getAreaClient'])->name('get-area-client');
+    
+    
+    Route::get('/area', [MasterController::class, 'Area'])->name('area');
+    Route::get('/get-area', [MasterController::class, 'getArea'])->name('get-area');
+    Route::post('/area-add', [MasterController::class, 'AreaAdd'])->name('area-add');
+    Route::post('/area-proses', [MasterController::class, 'Areaproses'])->name('area-proses');
+    Route::get('/edit-area/{data}', [MasterController::class, 'EditArea'])->name('edit-area');
+    Route::post('/edit-area-process', [MasterController::class, 'EditAreaProcess'])->name('edit-area-process');
+    Route::get('/delete-area/{data}', [MasterController::class, 'deleteArea'])->name('delete-area');
+    Route::get('/area-export', [MasterController::class, 'AreaExport'])->name('area-export');
+
+
     Route::post('/get-branch-pic-client', [MasterController::class, 'getBranchpicClient'])->name('get-branch-pic-client');
     Route::get('/branch', [MasterController::class, 'Branch'])->name('branch');
     Route::post('/branch-add', [MasterController::class, 'BranchAdd'])->name('branch-add');
