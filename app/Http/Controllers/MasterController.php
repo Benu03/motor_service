@@ -272,7 +272,7 @@ class MasterController extends Controller
           
         $role = Session::get('modules')['role'] ?? null;
         if ($role === 'ADMIN TS3') {
-           \
+           
                     $area 	= DB::connection('ts3')->table('mst.v_area')->where('id',$id)->first();
                     $regional 	= DB::connection('ts3')->table('mst.v_regional')->get();
         
@@ -328,19 +328,27 @@ class MasterController extends Controller
 
     public function deleteArea($id)
     {
+
         $role = Session::get('modules')['role'] ?? null;
         if ($role === 'ADMIN TS3') {
-
-            DB::connection('ts3')->table('mst.mst_area')->where('id',$id)->delete();
-                return redirect('area')->wsith(['sukses' => 'Data telah dihapus']);
-
+            $deleteResult =   DB::connection('ts3')->table('mst.mst_area')->where('id',$id)->delete();
+    
+            if ($deleteResult) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Data telah berhasil dihapus.',
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gagal menghapus data.',
+                ], 500);
+            }
         }
-        
-        $data = [   'title' => 'Access Forbidden',
-                    'content'   => 'global/notification/forbidden'
-                ];
-
-        return view('layout/wrapper',$data);
+        return response()->json([
+            'success' => false,
+            'message' => 'Access Forbidden: Anda tidak memiliki izin untuk menghapus data ini.',
+        ], 403);
 
     }
 
@@ -701,19 +709,27 @@ class MasterController extends Controller
 
     public function deleteBranch($id)
     {
+   
         $role = Session::get('modules')['role'] ?? null;
         if ($role === 'ADMIN TS3') {
-
-                DB::connection('mtr')->table('mst.mst_branch')->where('id',$id)->delete();
-                return redirect('branch')->with(['sukses' => 'Data telah dihapus']);
-
+            $deleteResult =    DB::connection('mtr')->table('mst.mst_branch')->where('id',$id)->delete();
+    
+            if ($deleteResult) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Data telah berhasil dihapus.',
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gagal menghapus data.',
+                ], 500);
+            }
         }
-        
-        $data = [   'title' => 'Access Forbidden',
-                    'content'   => 'global/notification/forbidden'
-                ];
-
-        return view('layout/wrapper',$data);
+        return response()->json([
+            'success' => false,
+            'message' => 'Access Forbidden: Anda tidak memiliki izin untuk menghapus data ini.',
+        ], 403);
 
     }
 
@@ -850,23 +866,25 @@ class MasterController extends Controller
     {
        
         $role = Session::get('modules')['role'] ?? null;
-        if ($role === 'ADMIN TS3') {
-       
+        Log::info($role);
+      
+            if ($role === 'ADMIN TS3') {
+                if ($request->has('hapus')) {
+                    $ids = $request->input('id');
 
-            if(isset($_POST['hapus'])) {
-                $id       = $request->id;
-        
-                for($i=0; $i < sizeof($id);$i++) {
-                        
-                DB::connection('mtr')->table('mst.mst_vehicle_type')->where('id',$id[$i])->delete();
-                
+                    if (!empty($ids)) {
+
+                        foreach ($ids as $id) {
+                            DB::connection('mtr')->table('mst.mst_vehicle_type')->where('id', $id)->delete();
+                        }
+
+                        return redirect('vehicle-type')->with(['sukses' => 'Data telah dihapus']);
+                    } else {
+                        return redirect('vehicle-type')->with(['error' => 'Tidak ada data yang dipilih untuk dihapus.']);
+                    }
                 }
-            
-                return redirect('vehicle-type')->with(['sukses' => 'Data telah dihapus']);
-        
             }
 
-        }
                 
         $data = [   'title' => 'Access Forbidden',
                     'content'   => 'global/notification/forbidden'
@@ -909,6 +927,7 @@ class MasterController extends Controller
     public function EditVehicleTypeProcess(Request $request)
     {
         $role = Session::get('modules')['role'] ?? null;
+        Log::info($role);
         if ($role === 'ADMIN TS3') {
             
             request()->validate([
@@ -941,18 +960,24 @@ class MasterController extends Controller
     {
         $role = Session::get('modules')['role'] ?? null;
         if ($role === 'ADMIN TS3') {
-            
-        
-            DB::connection('mtr')->table('mst.mst_vehicle_type')->where('id',$id)->delete();
-            return redirect('vehicle-type')->with(['sukses' => 'Data telah dihapus']);
-
+            $deleteResult = DB::connection('mtr')->table('mst.mst_vehicle_type')->where('id', $id)->delete();
+    
+            if ($deleteResult) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Data telah berhasil dihapus.',
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gagal menghapus data.',
+                ], 500);
             }
-            
-            $data = [   'title' => 'Access Forbidden',
-                        'content'   => 'global/notification/forbidden'
-                    ];
-
-            return view('layout/wrapper',$data);
+        }
+        return response()->json([
+            'success' => false,
+            'message' => 'Access Forbidden: Anda tidak memiliki izin untuk menghapus data ini.',
+        ], 403);
     }
 
     public function getVehicle(Request $request)
@@ -972,7 +997,7 @@ class MasterController extends Controller
                                         class="btn btn-success btn-sm"><i class="fa fa-eye"></i></a>
                                     <a href="'. asset('edit-vehicle/'.$row->id).'" 
                                         class="btn btn-warning btn-sm"><i class="fa fa-edit"></i></a>
-                                    <a href="'. asset('delete-vehicle/'.$row->id).'" class="btn btn-danger btn-sm">
+                                    <a href="'. asset('delete-vehicle/'.$row->id).'" class="btn btn-danger btn-sm delete-link">
                                             <i class="fa fa-trash"></i></a>
                                     </div>';
                         return $btn; })
@@ -1035,28 +1060,33 @@ class MasterController extends Controller
 
     public function Vehicleproses(Request $request)
     { 
-        
         $role = Session::get('modules')['role'] ?? null;
-        if ($role === 'ADMIN TS3') {       
+        Log::info($role);
+      
+            if ($role === 'ADMIN TS3') {
+                if ($request->has('hapus')) {
+                    $ids = $request->input('id');
 
-            if(isset($_POST['hapus'])) {
-                $id       = $request->id;
-        
-                for($i=0; $i < sizeof($id);$i++) {
-                        
-                DB::connection('mtr')->table('mst.mst_vehicle')->where('id',$id[$i])->delete();
-                
+                    if (!empty($ids)) {
+
+                        foreach ($ids as $id) {
+                            DB::connection('mtr')->table('mst.mst_vehicle')->where('id', $id)->delete();
+                        }
+
+                        return redirect('vehicle')->with(['sukses' => 'Data telah dihapus']);
+                    } else {
+                        return redirect('vehicle')->with(['error' => 'Tidak ada data yang dipilih untuk dihapus.']);
+                    }
                 }
-            
-                return redirect('vehicle')->with(['sukses' => 'Data telah dihapus']);
-        
             }
-        }
+
+                
         $data = [   'title' => 'Access Forbidden',
                     'content'   => 'global/notification/forbidden'
                 ];
 
-        return view('layout/wrapper',$data);
+        return view('layout/wrapper',$data);  
+
 
 
 
@@ -1121,18 +1151,27 @@ class MasterController extends Controller
 
     public function deleteVehicle($id)
     {
+      
         $role = Session::get('modules')['role'] ?? null;
-        if ($role === 'ADMIN TS3') {   
-     
-            DB::connection('mtr')->table('mst.mst_vehicle')->where('id',$id)->delete();
-            return redirect('vehicle')->with(['sukses' => 'Data telah dihapus']);
-
-        }
-        $data = [   'title' => 'Access Forbidden',
-                    'content'   => 'global/notification/forbidden'
-                ];
-
-        return view('layout/wrapper',$data);            
+        if ($role === 'ADMIN TS3') {
+            $deleteResult =   DB::connection('mtr')->table('mst.mst_vehicle')->where('id',$id)->delete();
+    
+            if ($deleteResult) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Data telah berhasil dihapus.',
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gagal menghapus data.',
+                ], 500);
+            }
+            }
+            return response()->json([
+                'success' => false,
+                'message' => 'Access Forbidden: Anda tidak memiliki izin untuk menghapus data ini.',
+            ], 403);
     }
 
 
@@ -1309,8 +1348,6 @@ class MasterController extends Controller
                     return view('layout/wrapper',$data); 
     }
 
-
-    
 
     public function getAreaClient()
     {

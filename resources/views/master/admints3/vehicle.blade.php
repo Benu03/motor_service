@@ -11,15 +11,16 @@
 @include('master/admints3/vehicle_tambah')
 @include('master/admints3/vehicle_upload')
 </p>
-<form action="{{ route('vehicle-proses') }}" method="post" accept-charset="utf-8">
+<form id="delete-form" class="form-confirm" action="{{ route('vehicle-proses') }}" method="post" accept-charset="utf-8">
 {{ csrf_field() }}
+<input type="hidden" name="hapus" value="1">
 <div class="row">
 
 <div class="col-md-8">
     <div class="btn-group">
-    <button class="btn btn-danger" type="submit" name="hapus" onClick="check();" >
-        <i class="fa fa-trash"></i>
-    </button> 
+        <button type="button" class="btn btn-danger btn-sweet-delete">
+            <i class="fa fa-trash"></i> Hapus
+        </button>
         <button type="button" class="btn btn-primary " data-toggle="modal" data-target="#Tambah">
             <i class="fa fa-plus"></i> Tambah Baru
         </button>

@@ -10,15 +10,16 @@
 <p>
 @include('master/admints3/vehicle_type_tambah')
 </p>
-<form action="{{ route('vehicle-type-process') }}" method="post" accept-charset="utf-8">
+<form  id="delete-form" class="form-confirm" action="{{ route('vehicle-type-process') }}" method="POST" accept-charset="utf-8">
 {{ csrf_field() }}
+<input type="hidden" name="hapus" value="1">
 <div class="row">
 
 <div class="col-md-12">
     <div class="btn-group">
-    <button class="btn btn-danger" type="submit" name="hapus" onClick="check();" >
-        <i class="fa fa-trash"></i>
-    </button> 
+        <button type="button" class="btn btn-danger btn-sweet-delete">
+            <i class="fa fa-trash"></i> Hapus
+        </button>
         <button type="button" class="btn btn-success " data-toggle="modal" data-target="#Tambah_vehicle_type">
             <i class="fa fa-plus"></i> Tambah Baru
         </button>
@@ -34,7 +35,6 @@
     <tr class="bg-info">
         <th width="5%">
         <div class="mailbox-controls">
-                <!-- Check all button -->
             <button type="button" class="btn btn-default btn-sm checkbox-toggle"><i class="far fa-square"></i>
                 </button>
             </div>

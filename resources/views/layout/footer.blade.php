@@ -27,9 +27,111 @@ $('.loglog').on('click', function() {
     })
 
 
+    $(document).on("click", ".delete-link", function (e) {
+    e.preventDefault(); 
+    const url = $(this).attr("href"); 
 
+    // Gunakan SweetAlert versi terbaru
+    Swal.fire({
+        title: "Yakin akan menghapus data ini?",
+        text: "Data yang dihapus tidak dapat dikembalikan.",
+        icon: "warning",
+        showCancelButton: true,
+        reverseButtons: true,
+        confirmButtonColor: "#d33",
+        cancelButtonColor: "#3085d6",
+        confirmButtonText: "Hapus",
+        cancelButtonText: "Batal",
+        showLoaderOnConfirm: true,
+        preConfirm: () => {
+            // Kirim permintaan AJAX jika dikonfirmasi
+            return $.ajax({
+                url: url,
+                method: "GET", // Atau sesuaikan dengan metode API Anda (GET, POST, DELETE)
+            })
+                .then((response) => {
+                    // Tangani respons sukses
+                    if (response.success) {
+                        Swal.fire({
+                            title: "Berhasil!",
+                            text: response.message || "Data berhasil dihapus.",
+                            icon: "success",
+                        }).then(() => {
+                            location.reload(); // Reload halaman setelah sukses
+                        });
+                    } else {
+                        Swal.fire({
+                            title: "Gagal!",
+                            text: response.message || "Terjadi kesalahan saat menghapus data.",
+                            icon: "error",
+                        });
+                    }
+                })
+                .catch((error) => {
+                    // Tangani error
+                    Swal.fire({
+                        title: "Error!",
+                        text: "Terjadi kesalahan pada server.",
+                        icon: "error",
+                    });
+                });
+        },
+        allowOutsideClick: () => !Swal.isLoading(),
+    });
+});
 
-      
+  $(document).on('click', '.btn-sweet-delete', function (e) {
+      e.preventDefault();
+
+      // Ambil semua checkbox yang dicentang
+      let selectedIds = [];
+      $('input[name="id[]"]:checked').each(function () {
+          selectedIds.push($(this).val());
+      });
+
+      // Jika tidak ada data yang dipilih, tampilkan peringatan
+      if (selectedIds.length === 0) {
+          Swal.fire({
+              title: 'Tidak ada data yang dipilih',
+              icon: 'warning',
+              confirmButtonColor: '#3085d6',
+              confirmButtonText: 'OK',
+          });
+          return;
+      }
+
+      // SweetAlert untuk konfirmasi penghapusan
+      Swal.fire({
+          title: 'Yakin akan menghapus data yang dipilih?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          cancelButtonColor: '#3085d6',
+          confirmButtonText: 'Ya, hapus!',
+          cancelButtonText: 'Batal',
+      }).then((result) => {
+          if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Sedang memproses...',
+                text: 'Mohon tunggu beberapa saat.',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading(); // Menampilkan animasi loading
+                },
+            });
+
+            // Submit form setelah loading ditampilkan
+            $('#delete-form').submit();
+          }
+      });
+  });
+
+  // Fungsi untuk toggle checkbox "Pilih Semua"
+  $('#select-all').on('change', function () {
+      $('input[name="id[]"]').prop('checked', $(this).prop('checked'));
+  });
+
 </script>
 
 
@@ -141,6 +243,8 @@ $awal = $sek-5;
     @endif
 
 </script>
+
+
 
 </div>
 </div>
