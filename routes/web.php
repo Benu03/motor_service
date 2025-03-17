@@ -58,13 +58,21 @@ Route::group(['middleware' => ['session_key']],function(){
 
 
     Route::get('/report', [ReportController::class, 'index'])->name('report');
+    
     Route::get('/report-history-service', [ReportController::class, 'ReportHistoryService'])->name('report-history-service');
+    Route::post('/get-history-service',  [ReportController::class, 'getHistoryService'])->name('get-history-service');
+    Route::get('/report-history-service-detail/{par1}', [ReportController::class, 'ReportHistoryServiceDetail'])->name('report-history-service-detail');
+    Route::post('/export-history-service',  [ReportController::class, 'exportHistoryService'])->name('export-history-service');
+
+
     Route::get('/report-realisasi-spk', [ReportController::class, 'ReportRealisasiSpk'])->name('report-realisasi-spk');
     Route::get('/report-rekap-invoice', [ReportController::class, 'ReportRekapInvoice'])->name('report-rekap-invoice');
     Route::get('/report-spk-history', [ReportController::class, 'ReportSpkHistory'])->name('report-spk-history');
     Route::get('/report-summary-bengkel', [ReportController::class, 'ReportSummaryBengkel'])->name('report-summary-bengkel');
     Route::get('/report-service-duedate', [ReportController::class, 'ReportServicedueDate'])->name('report-service-duedate');
     Route::get('/report-laba-rugi', [ReportController::class, 'ReportLabaRugi'])->name('report-laba-rugi');
+
+
 
 
     Route::get('/direct-service', [ServicesController::class, 'directService'])->name('direct-service');

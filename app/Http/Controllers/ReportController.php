@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Session;
+use DataTables;
 
 
 class ReportController extends Controller
@@ -35,6 +36,114 @@ class ReportController extends Controller
         return view('layout/wrapper',$data);
 
     }
+
+    public function ReportHistoryServiceDetail($id)
+    {
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+
+
+            $ar = DB::connection('mtr')->table('mvm.v_service_history')->where('service_no', $id)->first();
+
+            $data = array(   'title'     => 'History Service '.$ar->service_no,
+                             'ar'      => $ar,
+                            'content'   => 'report/admints3/service_detail_history'
+                        );
+
+            
+            return view('layout/wrapper',$data);
+
+        }
+       
+        $data = [   'title' => 'Access Forbidden',
+                    'content'   => 'global/notification/forbidden'
+                ];
+
+        return view('layout/wrapper',$data);
+
+    }
+
+     
+    public function exportHistoryService(Request $request)
+    {
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+
+
+            if ($request->ajax()) {
+                $query = DB::connection('mtr')->table('mvm.v_service_history')->selectRaw("
+                    spk_no, service_no, nopol, norangka, nomesin, tahun, 
+                    type as tipe, status_service, tanggal_service, 
+                    nama_driver, last_km, bengkel_name as bengkel, mekanik,
+                    tgl_last_service, regional, area, branch as cabang, pic_branch as pic_cabang, 
+                    tanggal_schedule, remark_ts3 as remark
+                ");
+        
+                if (!empty($request->from_date) && !empty($request->to_date)) {
+                    $query->whereBetween('tanggal_service', [$request->from_date, $request->to_date]);
+                }
+        
+                if (!empty($request->spkno)) {
+                    $query->where('spk_no', 'ILIKE', '%' . $request->spkno . '%');
+                }
+        
+                $service = $query->get();
+        
+                return response()->json(['data' => $service]);
+            }
+
+        }
+       
+        $data = [   'title' => 'Access Forbidden',
+                    'content'   => 'global/notification/forbidden'
+                ];
+
+        return view('layout/wrapper',$data);
+
+    }
+
+    
+
+    
+
+    public function getHistoryService(Request $request)
+    {
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+
+            if ($request->ajax()) {
+                $query = DB::connection('mtr')->table('mvm.v_service_history');
+        
+                if (!empty($request->from_date) && !empty($request->to_date)) {
+                    $query->whereBetween('tanggal_service', [$request->from_date, $request->to_date]);
+                }
+        
+                if (!empty($request->spkno)) {
+                    $query->where('spk_no', 'ILIKE', '%' . $request->spkno . '%');
+                }
+        
+                $service = $query->get();
+        
+                return DataTables::of($service)
+                    ->addColumn('action', function ($row) {
+                        $btn = '<a href="' . asset('history-service-detail/' . $row->service_no) . '" 
+                            class="btn btn-success btn-sm" target="_blank"><i class="fa fa-eye"></i></a>';
+                        return $btn;
+                    })
+                    ->rawColumns(['action'])
+                    ->make(true);
+            }
+
+        }
+       
+        $data = [   'title' => 'Access Forbidden',
+                    'content'   => 'global/notification/forbidden'
+                ];
+
+        return view('layout/wrapper',$data);
+
+    }
+
 
     public function ReportRealisasiSpk(Request $request)
     {

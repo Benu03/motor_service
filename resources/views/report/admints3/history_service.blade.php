@@ -15,8 +15,7 @@
 
   
    <div class="col-md-12">
-        
-            
+                   
         
             
 				<div class="form-group row">
@@ -100,7 +99,7 @@
     <div class="table-responsive mailbox-messages">
 <table id="dataTable" class="display table table-bordered" cellspacing="0" width="100%" style="font-size: 12px;">
 <thead>
-    <tr class="bg-info">
+    <tr style="background-color: #709c0b; color: white; text-align: center;">
         {{-- <th width="5%">
           <div class="mailbox-controls">
                 <!-- Check all button -->
@@ -156,7 +155,7 @@
                     },
                     ajax: {
                         headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}'},
-                        url:"{{  url('admin-ts3/get-history-service') }}",
+                        url:"{{  url('get-history-service') }}",
                         type: "POST",
                         data: function (d) {
                         d.from_date = from_date;
