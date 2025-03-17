@@ -11,15 +11,16 @@
   @include('master/admints3/branch_tambah')
   @include('master/admints3/branch_upload')
 </p>
-<form action="{{ url('branch-proses') }}" method="post" accept-charset="utf-8">
+<form  id="delete-form" class="form-confirm" action="{{ route('branch-proses') }}" method="post" accept-charset="utf-8">
 {{ csrf_field() }}
+<input type="hidden" name="hapus" value="1">
 <div class="row">
 
   <div class="col-md-8">
     <div class="btn-group">
-      <button class="btn btn-danger" type="submit" name="hapus" onClick="check();" >
-          <i class="fa fa-trash"></i>
-      </button> 
+        <button type="button" class="btn btn-danger btn-sweet-delete">
+            <i class="fa fa-trash"></i> Hapus
+        </button>
         <button type="button" class="btn btn-primary " data-toggle="modal" data-target="#Tambah">
             <i class="fa fa-plus"></i> Tambah Baru
         </button>
@@ -29,7 +30,7 @@
     <button type="button" class="btn btn-secondary " data-toggle="modal" data-target="#upload">
         <i class="fas fa-file-upload"></i> Upload
     </button>
-    <a href="{{ url('branch-export') }}" class="btn btn-success">       
+    <a href="{{ route('branch-export') }}" class="btn btn-success">       
         <i class="fas fa-file-excel"></i> Export Excel
     </a>
 </div>
@@ -40,7 +41,7 @@
     <div class="table-responsive mailbox-messages">
 <table id="dataTable" class="display table table-bordered" cellspacing="0" width="100%">
 <thead>
-    <tr class="bg-info">
+    <tr style="background-color: #709c0b; color: white; text-align: center;">
         <th width="5%">
           <div class="mailbox-controls">
                 <!-- Check all button -->

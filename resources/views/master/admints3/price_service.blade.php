@@ -10,7 +10,7 @@
 <p>
   @include('master/admints3/price_service_tambah')
 </p>
-<form action="{{ asset('admin-ts3/price-service/proses') }}" method="post" accept-charset="utf-8">
+<form action="{{ route('price-service-proses') }}" method="post" accept-charset="utf-8">
 {{ csrf_field() }}
 <div class="row">
 
@@ -26,7 +26,7 @@
     </div>
 
     <div class="col-md-4 text-right">
-        <a href="{{ asset('admin-ts3/export/price-service') }}" class="btn btn-success">       
+        <a href="{{ route('price-service-export') }}" class="btn btn-success">       
             <i class="fas fa-file-excel"></i> Export Excel
         </a>
     </div>
@@ -39,7 +39,7 @@
     <div class="table-responsive mailbox-messages">
 <table id="dataTable" class="display table table-bordered" cellspacing="0" width="100%">
 <thead>
-    <tr class="bg-info">
+    <tr style="background-color: #709c0b; color: white; text-align: center;">
         <th width="5%">
           <div class="mailbox-controls">
                 <!-- Check all button -->
@@ -90,7 +90,7 @@
                         }
                     },
                     ajax: {
-                        url:"{{  asset('admin-ts3/get-price-service') }}",
+                        url:"{{  url('get-price-service') }}",
                         type: "GET"
                              
                     },

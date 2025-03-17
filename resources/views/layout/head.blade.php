@@ -210,6 +210,13 @@
   }
      
   
+  .pace .pace-progress {
+    background: #709c0b !important;
+  }
+  .pace .pace-progress-inner {
+      box-shadow: 0 0 10px #949494, 0 0 5px #709c0b !important;
+  }
+
   </style>
 
 

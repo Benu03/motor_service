@@ -13,7 +13,11 @@ use Illuminate\Support\Facades\Session;
 use DataTables;
 use App\Imports\VehicleTempImport;
 use App\Exports\AdminTs3\VehicleExport;
+use App\Exports\AdminTs3\BengkelExport;
 use App\Exports\AdminTs3\BranchExport;
+use App\Exports\AdminTs3\AreaExport;
+use App\Exports\AdminTs3\PriceServiceExport;
+use App\Exports\AdminTs3\RegionalExport;
 use App\Models\Branchmodel;
 use Storage;
 use App\Models\Vehicle_model;
@@ -21,6 +25,226 @@ use Illuminate\Support\Facades\File;
 
 class MasterController extends Controller
 {
+
+    public function ValidateSample(Request $request)
+    {
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+
+          
+
+        }
+       
+        $data = [   'title' => 'Access Forbidden',
+                    'content'   => 'global/notification/forbidden'
+                ];
+
+        return view('layout/wrapper',$data);
+
+    }
+
+    public function PriceServiceproses(Request $request)
+    {
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+
+            if(isset($_POST['hapus'])) {
+                $id       = $request->id;
+         
+                for($i=0; $i < sizeof($id);$i++) {
+                          
+                   DB::connection('mtr')->table('mst.mst_price_service')->where('id',$id[$i])->delete();
+                   DB::connection('mtr')->table('mst.mst_price_service_x_regional')->where('mst_price_service_id',$id[$i])->delete();
+                 
+                }
+            
+                return redirect('price-service')->with(['sukses' => 'Data telah dihapus']);
+
+            }
+
+
+        }
+       
+        $data = [   'title' => 'Access Forbidden',
+                    'content'   => 'global/notification/forbidden'
+                ];
+
+        return view('layout/wrapper',$data);
+
+    }
+
+    public function PriceServiceDelete($id)
+    {
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+
+            DB::connection('mtr')->table('mst.mst_price_service')->where('id',$id)->delete();
+            DB::connection('mtr')->table('mst.mst_price_service_x_regional')->where('mst_price_service_id',$id)->delete();
+            
+            return redirect('price-service')->with(['sukses' => 'Data telah dihapus']);
+
+        }
+       
+        $data = [   'title' => 'Access Forbidden',
+                    'content'   => 'global/notification/forbidden'
+                ];
+
+        return view('layout/wrapper',$data);
+
+    }
+
+    public function PriceServiceExport(Request $request)
+    {
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+
+          
+            return Excel::download(new PriceServiceExport, 'PRICE_SERVICE-MVM.xlsx');
+        }
+       
+        $data = [   'title' => 'Access Forbidden',
+                    'content'   => 'global/notification/forbidden'
+                ];
+
+        return view('layout/wrapper',$data);
+
+    }
+
+    public function PriceServiceEditProcess(Request $request)
+    {
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+
+            request()->validate([
+                'service_name' 	   => 'required',
+                'price_bengkel_to_ts3' 	   => 'required',
+                'mst_client_id' 	   => 'required',
+                'price_ts3_to_client' 	   => 'required',
+                'price_service_type' 	   => 'required',
+            ]);
+     try{
+        DB::connection('mtr')->beginTransaction();
+            DB::connection('mtr')->table('mst.mst_price_service')->where('id',$request->id)->update([
+                'service_name'   => $request->service_name,
+                'price_bengkel_to_ts3'	=> $request->price_bengkel_to_ts3,
+                'mst_client_id'	=> $request->mst_client_id,
+                'price_ts3_to_client'	=> $request->price_ts3_to_client,
+                'price_service_type' 	   =>  $request->price_service_type,
+                'updated_at'    => date("Y-m-d h:i:sa"),
+                'update_by'     => $request->session()->get('username')
+            ]);            
+            DB::connection('mtr')->table('mst.mst_price_service_x_regional')->where('mst_price_service_id',$request->id)->delete();
+            foreach($request->mst_regional_id as $val){
+                $datasets = [
+                    'mst_price_service_id' => $request->id,
+                    'mst_regional_id' => $val
+                ];
+    
+                DB::connection('mtr')->table('mst.mst_price_service_x_regional')->insert($datasets);
+            }
+            DB::connection('mtr')->commit();
+        }
+        catch (\Illuminate\Database\QueryException $e) {
+            DB::connection('mtr')->rollback();
+            return redirect('price-service')->with(['warning' => $e]);
+        }
+
+        return redirect('price-service')->with(['sukses' => 'Data telah diupdate']);
+
+        }
+       
+        $data = [   'title' => 'Access Forbidden',
+                    'content'   => 'global/notification/forbidden'
+                ];
+
+        return view('layout/wrapper',$data);
+
+    }
+
+    public function PriceServiceEdit($id)
+    {
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+
+            $price 	= DB::connection('mtr')->table('mst.v_price_service')->where('id',$id)->first();
+            $client 	= DB::connection('mtr')->table('mst.mst_client')->where('client_type','B2B')->get();
+            $regional 	= DB::connection('mtr')->table('mst.mst_regional')->get();        
+            $price_type = DB::connection('mtr')->table('mst.mst_general')->where('name','price_service_type')->get();
+
+		    $data = array(  'title'         => 'Edit Price Service',
+                            'price'         => $price,
+                            'client'        => $client,
+                            'regional'      => $regional,
+                            'price_type'      => $price_type,
+                            'content'       => 'master/admints3/price_service_edit'
+                        );
+                   
+        
+                        return view('layout/wrapper',$data);
+
+          
+
+        }
+       
+        $data = [   'title' => 'Access Forbidden',
+                    'content'   => 'global/notification/forbidden'
+                ];
+
+        return view('layout/wrapper',$data);
+
+    }
+
+
+    public function PriceServiceAdd(Request $request)
+    {
+        $role = Session::get('modules')['role'] ?? null;
+    
+        if ($role !== 'ADMIN TS3') {
+            return view('layout/wrapper', [
+                'title'   => 'Access Forbidden',
+                'content' => 'global/notification/forbidden'
+            ]);
+        }
+    
+        $request->validate([
+            'kode'                  => 'required|unique:mtr.mst.mst_price_service',
+            'service_name'          => 'required',
+            'price_bengkel_to_ts3'  => 'required',
+            'mst_client_id'         => 'required',
+            'price_ts3_to_client'   => 'required',
+            'mst_regional_id'       => 'required|array',
+            'price_service_type'    => 'required',
+        ]);
+
+      
+
+
+    
+            $id_price = DB::connection('mtr')->table('mst.mst_price_service')->insertGetId([
+                'kode'                  => $request->kode,
+                'service_name'           => $request->service_name,
+                'price_bengkel_to_ts3'   => $request->price_bengkel_to_ts3,
+                'mst_client_id'          => $request->mst_client_id,
+                'price_ts3_to_client'    => $request->price_ts3_to_client,
+                'price_service_type'     => $request->price_service_type,
+                'created_date'           => now(),
+                'create_by'              => $request->session()->get('username')
+            ]);
+    
+
+
+    
+            $regionalData = array_map(fn($val) => [
+                'mst_price_service_id' => $id_price,
+                'mst_regional_id'      => $val
+            ], $request->mst_regional_id);
+    
+            DB::connection('mtr')->table('mst.mst_price_service_x_regional')->insert($regionalData);
+
+            return redirect('price-service')->with(['sukses' => 'Data telah ditambah']);
+      
+    }
+    
 
     public function Bengkel(Request $request)
     {
@@ -48,6 +272,231 @@ class MasterController extends Controller
         return view('layout/wrapper',$data);
 
     }
+
+    public function BengkelGet(Request $request)
+    {
+
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+
+                        if ($request->ajax()) {
+
+                            $bengkel 	= DB::connection('mtr')->table('mst.v_bengkel')->get();
+        
+                            return DataTables::of($bengkel)
+                                    ->addColumn('action', function($row){
+                                        $btn = '<div class="btn-group">
+                                                <a href="'. asset('bengkel-edit/'.$row->id).'" 
+                                                    class="btn btn-warning btn-sm"><i class="fa fa-edit"></i></a>
+                                                <a href="'. asset('bengkel-delete/'.$row->id).'" class="btn btn-danger btn-sm delete-link">
+                                                        <i class="fa fa-trash"></i></a>
+                                                </div>';
+                                               
+                                    return $btn; })
+                                    ->addColumn('check', function($row){
+                                        $check = ' <td class="text-center">
+                                                    <div class="icheck-primary">
+                                                    <input type="checkbox" class="icheckbox_flat-blue " name="id[]" value="'.$row->id.'" id="check'.$row->id.'">
+                                                   <label for="check'.$row->id.'"></label>
+                                                    </div>
+                                                 </td>';
+                                        return $check; })
+                                    ->rawColumns(['action','check'])
+                                    ->make(true);
+
+                          
+                            }
+                    }
+        
+        $data = [   'title' => 'Access Forbidden',
+                    'content'   => 'global/notification/forbidden'
+                ];
+
+        return view('layout/wrapper',$data);
+
+    }
+
+    public function BengkelAdd(Request $request)
+    {
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+
+
+                    try{
+                        DB::connection('mtr')->beginTransaction();
+                    $maxId = DB::connection('mtr')->table('mst.mst_bengkel')->selectRaw('max(id) as id')->first();
+                    $seq = $maxId->id + 1;
+
+                        DB::connection('mtr')->table('mst.mst_bengkel')->insert([
+                            'bengkel_name'	=> $request->bengkel_name,
+                            'bengkel_alias'	=> 'TS3-MITRA-'.$seq,
+                            'pic_bengkel'   => $request->pic_bengkel,
+                            'phone'	=> $request->phone,
+                            'address'	=> $request->address,
+                            'latitude'	=> $request->latitude,
+                            'longitude'	=> $request->longitude,
+                            'created_date'    => date("Y-m-d h:i:sa"),
+                            'create_by'     => $request->session()->get('username')
+                        ]);
+
+                        DB::commit();
+                    }
+                    catch (\Illuminate\Database\QueryException $e) {
+                        DB::connection('mtr')->rollback();
+                        return redirect('bengkel')->with(['warning' => $e]);
+                    }
+
+                    return redirect('bengkel')->with(['sukses' => 'Data telah ditambah']);
+
+        }
+            
+        $data = [   'title' => 'Access Forbidden',
+                    'content'   => 'global/notification/forbidden'
+                ];
+
+        return view('layout/wrapper',$data);
+    }
+    
+    public function Bengkelproses(Request $request)
+    {
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+
+            request()->validate([
+                'pic_bengkel' => 'required',
+                'bengkel_name' 	   => 'required',
+            ]);
+            try{
+                        DB::connection('mtr')->beginTransaction();
+                    DB::connection('mtr')->table('mst.mst_bengkel')->where('id',$request->id)->update([
+                        'bengkel_name'	=> $request->bengkel_name,
+                        'pic_bengkel'   => $request->pic_bengkel,
+                        'phone'	=> $request->phone,
+                        'address'	=> $request->address,
+                        'latitude'	=> $request->latitude,
+                        'longitude'	=> $request->longitude,
+                        'updated_at'    => date("Y-m-d h:i:sa"),
+                        'update_by'     => $request->session()->get('username')
+                    ]);   
+                    DB::connection('ts3')->commit();
+                }
+                catch (\Illuminate\Database\QueryException $e) {
+                    DB::connection('mtr')->rollback();
+                    return redirect('bengkel')->with(['warning' => $e]);
+                }
+                return redirect('bengkel')->with(['sukses' => 'Data telah diupdate']);                                             
+
+        }
+       
+        $data = [   'title' => 'Access Forbidden',
+                    'content'   => 'global/notification/forbidden'
+                ];
+
+        return view('layout/wrapper',$data);
+
+    }
+    
+
+    public function BengkelEdit($id)
+    {
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+
+            $bengkel 	= DB::connection('mtr')->table('mst.v_bengkel')->where('id',$id)->first();
+            $user_bengkel 	= DB::connection('mtr')->table('auth.users')->where('id_role','4')->get();
+           
+		    $data = array(  'title'         => 'Edit Bengkel',
+                            'bengkel'      => $bengkel,
+                            'userbengkel'      => $user_bengkel,
+                            'content'       => 'master/admints3/bengkel_edit'
+                    );
+        
+             return view('layout/wrapper',$data);
+        }
+       
+        $data = [   'title' => 'Access Forbidden',
+                    'content'   => 'global/notification/forbidden'
+                ];
+
+        return view('layout/wrapper',$data);
+
+    }
+
+    public function BengkelEditProcess(Request $request)
+    {
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+
+                        request()->validate([
+                            'pic_bengkel' => 'required',
+                            'bengkel_name' 	   => 'required',
+                        ]);
+                        try{
+                            DB::connection('mtr')->beginTransaction();
+                        DB::connection('mtr')->table('mst.mst_bengkel')->where('id',$request->id)->update([
+                            'bengkel_name'	=> $request->bengkel_name,
+                            'pic_bengkel'   => $request->pic_bengkel,
+                            'phone'	=> $request->phone,
+                            'address'	=> $request->address,
+                            'latitude'	=> $request->latitude,
+                            'longitude'	=> $request->longitude,
+                            'updated_at'    => date("Y-m-d h:i:sa"),
+                            'update_by'     => $request->session()->get('username')
+                        ]);   
+                        DB::connection('mtr')->commit();
+                    }
+                    catch (\Illuminate\Database\QueryException $e) {
+                        DB::connection('mtr')->rollback();
+                        return redirect('bengkel')->with(['warning' => $e]);
+                    }
+            return redirect('bengkel')->with(['sukses' => 'Data telah diupdate']);                                             
+
+        }
+       
+        $data = [   'title' => 'Access Forbidden',
+                    'content'   => 'global/notification/forbidden'
+                ];
+
+        return view('layout/wrapper',$data);
+
+    }
+
+    public function BengkelDelete($id)
+    {
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+
+            DB::connection('mtr')->table('mst.mst_bengkel')->where('id',$id)->delete();
+             return redirect('bengkel')->with(['sukses' => 'Data telah dihapus']);
+
+        }
+       
+        $data = [   'title' => 'Access Forbidden',
+                    'content'   => 'global/notification/forbidden'
+                ];
+
+        return view('layout/wrapper',$data);
+
+    }
+
+    public function BengkelExport(Request $request)
+    {
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+
+            return Excel::download(new BengkelExport, 'BENGKEL-MVM.xlsx');
+
+        }
+       
+        $data = [   'title' => 'Access Forbidden',
+                    'content'   => 'global/notification/forbidden'
+                ];
+
+        return view('layout/wrapper',$data);
+
+    }
+    
+
 
     public function PriceService(Request $request)
     {
@@ -78,15 +527,79 @@ class MasterController extends Controller
 
     }
 
+    public function PriceServiceGet(Request $request)
+    {
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+
+            if ($request->ajax()) {
+        
+
+                $price 	= DB::connection('mtr')->table('mst.v_price_service')->get();
+                
+                return DataTables::of($price)
+                        ->addColumn('action', function($row){
+                            $btn = '<div class="btn-group">
+                                    <a href="'. asset('price-service-edit/'.$row->id).'" 
+                                        class="btn btn-warning btn-sm"><i class="fa fa-edit"></i></a>
+                                    <a href="'. asset('price-service-delete/'.$row->id).'" class="btn btn-danger btn-sm delete-link">
+                                            <i class="fa fa-trash"></i></a>
+                                    </div>';
+                        return $btn; })
+                        ->addColumn('check', function($row){
+                            $check = ' <td class="text-center">
+                                        <div class="icheck-primary">
+                                        <input type="checkbox" class="icheckbox_flat-blue " name="id[]" value="'.$row->id.'" id="check'.$row->id.'">
+                                       <label for="check'.$row->id.'"></label>
+                                        </div>
+                                     </td>';
+                            return $check; })
+                        ->editColumn('price_bengkel_to_ts3', function ($row) {
+                            
+                                $datapr = 'Rp '. number_format($row->price_bengkel_to_ts3,0,',','.');
+                                return $datapr;
+                            }) 
+                        ->editColumn('price_ts3_to_client', function ($row) {
+                                $datapr = 'Rp '. number_format($row->price_ts3_to_client,0,',','.');
+                                return $datapr;
+                            }) 
+                        ->editColumn('regional', function ($row) {
+        
+                                $str = $row->regional;
+                                $delimiter = ',';
+                                $regionals = explode($delimiter, $str);
+                                $datarg = '';
+                                foreach ($regionals as $rgg) {
+                                    $datarg  .= '<span class="badge badge-pill badge-primary mr-2 mb-1">'.$rgg.'</span>' ;
+                                }
+                                return $datarg;
+                            })
+        
+                        ->rawColumns(['action','check','regional'])
+                        ->make(true);
+               
+                }
+          
+
+        }
+       
+        $data = [   'title' => 'Access Forbidden',
+                    'content'   => 'global/notification/forbidden'
+                ];
+
+        return view('layout/wrapper',$data);
+
+    }
+
 
     public function Regional(Request $request)
     {
         $role = Session::get('modules')['role'] ?? null;
         if ($role === 'ADMIN TS3') {
 
-            $regional 	= DB::connection('mtr')->table('mst.v_regional')->get();
+        $regional 	= DB::connection('mtr')->table('mst.v_regional')->get();
         $client 	= DB::connection('mtr')->table('mst.mst_client')->where('client_type','B2B')->get();
-
+        
 		$data = array(  'title'     => 'Regional',
                         'regional'      => $regional,
                         'client'      => $client,
@@ -105,7 +618,177 @@ class MasterController extends Controller
 
     }
 
+    public function getRegional(Request $request)
+    {
+
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+
+                        if ($request->ajax()) {
+                            $regional 	= DB::connection('mtr')->table('mst.v_regional')->get();
+                            return DataTables::of($regional)->addColumn('action', function($row){
+                                $btn = '<div class="btn-group">
+                                <a href="'. asset('edit-regional/'.$row->id).'" 
+                                    class="btn btn-warning btn-sm"><i class="fa fa-edit"></i></a>
+                                <a href="'. asset('delete-regional/'.$row->id).'"  class="btn btn-danger btn-sm delete-link">
+                                        <i class="fa fa-trash"></i></a>
+                                </div>';
+                                    return $btn;
+                                    })->addColumn('check', function($row){
+                                        $check = ' <td class="text-center">
+                                                    <div class="icheck-primary">
+                                                    <input type="checkbox" class="icheckbox_flat-blue " name="id[]" value="'.$row->id.'" id="check'.$row->id.'">
+                                                <label for="check'.$row->id.'"></label>
+                                                    </div>
+                                                </td>';
+                                        return $check;
+                                    })
+                            ->rawColumns(['action','check'])->make(true);
+                            }
+                    }
+        
+        $data = [   'title' => 'Access Forbidden',
+                    'content'   => 'global/notification/forbidden'
+                ];
+
+        return view('layout/wrapper',$data);
+
+    }
+
+
+    public function RegionalAdd(Request $request)
+    {
+    	
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+            request()->validate([
+                'mst_regional_id' => 'required',
+                'area' 	   => 'required|unique:mtr.mst.mst_regional',
+                ]);
+
+                DB::connection('mtr')->table('mst.mst_regional')->insert([
+                    'mst_client_id'   => $request->mst_client_id,
+                    'regional'	=> $request->regional,
+                    'created_date'    => date("Y-m-d h:i:sa"),
+                    'create_by'     => $request->session()->get('username'),
+                    'pic_regional'	=> $request->pic_regional
+                ]);
+
+
+                return redirect('regional')->with(['sukses' => 'Data telah ditambah']);
+
+            }
+       
+            $data = [   'title' => 'Access Forbidden',
+                        'content'   => 'global/notification/forbidden'
+                    ];
     
+            return view('layout/wrapper',$data);
+
+                
+    }
+
+
+    public function EditRegional($id)
+    {
+          
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+           
+
+                    $regional 	= DB::connection('mtr')->table('mst.v_regional')->where('id',$id)->first();
+                    $client 	= DB::connection('mtr')->table('mst.mst_client')->where('client_type','B2B')->get();
+                    $user_branch 	= DB::connection('sso')->table('auth.v_auth_user_module')
+                    ->where('module','MOTOR SERVICE')
+                    ->where('role','PIC REGIONAL')
+                    ->get();
+        
+                    $data = array(  'title'         => 'Edit Regional',
+                                    'regional'      => $regional,
+                                    'client'        => $client,
+                                    'userbranch'      => $user_branch,
+                                    'content'       => 'master/admints3/regional_edit'
+                            );
+
+                            return view('layout/wrapper',$data);
+
+            }
+       
+            $data = [   'title' => 'Access Forbidden',
+                        'content'   => 'global/notification/forbidden'
+                    ];
+    
+            return view('layout/wrapper',$data);
+
+    }
+
+
+    public function deleteRegional($id)
+    {
+
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+            $deleteResult =   DB::connection('mtr')->table('mst.mst_regional')->where('id',$id)->delete();
+    
+            if ($deleteResult) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Data telah berhasil dihapus.',
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gagal menghapus data.',
+                ], 500);
+            }
+        }
+        return response()->json([
+            'success' => false,
+            'message' => 'Access Forbidden: Anda tidak memiliki izin untuk menghapus data ini.',
+        ], 403);
+
+    }
+
+    public function RegionalExport()
+    {
+
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+         return Excel::download(new RegionalExport, 'REGIONAL-MVM.xlsx');
+        }
+        
+        $data = [   'title' => 'Access Forbidden',
+                    'content'   => 'global/notification/forbidden'
+                ];
+
+        return view('layout/wrapper',$data);
+    }
+
+
+    public function getRegionalpicClient()
+    {
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'ADMIN TS3') {
+
+          
+                        $pic 	= DB::connection('sso')->table('auth.v_auth_user_module')
+                        ->where('module','MOTOR SERVICE')
+                        ->where('role','PIC REGIONAL')
+                        ->pluck('username','fullname');
+
+                return response()->json($pic);
+
+            }
+                
+        $data = [   'title' => 'Access Forbidden',
+                        'content'   => 'global/notification/forbidden'
+                    ];
+
+        return view('layout/wrapper',$data);
+     
+    }
+
+
     public function Area(Request $request)
     {
         $role = Session::get('modules')['role'] ?? null;
@@ -161,12 +844,12 @@ class MasterController extends Controller
         if ($role === 'ADMIN TS3') {
                 
             if ($request->ajax()) {
-                $area 	= DB::connection('ts3')->table('mst.v_area')->get();
+                $area 	= DB::connection('mtr')->table('mst.v_area')->get();
                 return DataTables::of($area)->addColumn('action', function($row){
                     $btn = '<div class="btn-group">
-                    <a href="'. asset('admin-ts3/area/edit/'.$row->id).'" 
+                    <a href="'. asset('edit-area/'.$row->id).'" 
                         class="btn btn-warning btn-sm"><i class="fa fa-edit"></i></a>
-                    <a href="'. asset('admin-ts3/area/delete/'.$row->id).'" class="btn btn-danger btn-sm">
+                    <a href="'. asset('delete-area/'.$row->id).'" class="btn btn-danger btn-sm delete-link">
                             <i class="fa fa-trash"></i></a>
                     </div>';
                         return $btn;
@@ -192,7 +875,7 @@ class MasterController extends Controller
         return view('layout/wrapper',$data);
 
     }
-    
+
 
     public function AreaExport()
     {
@@ -212,21 +895,29 @@ class MasterController extends Controller
     public function Areaproses(Request $request)
     {
         $role = Session::get('modules')['role'] ?? null;
-        if ($role === 'ADMIN TS3') {      
        
-                if(isset($_POST['hapus'])) {
-                    $id       = $request->id;
-            
-                    for($i=0; $i < sizeof($id);$i++) {
-                            
-                    DB::connection('ts3')->table('mst.mst_area')->where('id',$id[$i])->delete();
-                    
+
+            if ($role === 'ADMIN TS3') {
+                if ($request->has('hapus')) {
+                    $ids = $request->input('id');
+
+                    if (!empty($ids)) {
+
+                        foreach ($ids as $id) {
+                            DB::connection('mtr')->table('mst.mst_area')->where('id', $id)->delete();
+                        }
+
+                        return redirect('area')->with(['sukses' => 'Data telah dihapus']);
+                    } else {
+                        return redirect('area')->with(['error' => 'Tidak ada data yang dipilih untuk dihapus.']);
                     }
-                
-                    return redirect('area')->with(['sukses' => 'Data telah dihapus']);
-              
                 }
             }
+
+
+
+
+
             $data = [   'title' => 'Access Forbidden',
                         'content'   => 'global/notification/forbidden'
                     ];
@@ -242,11 +933,11 @@ class MasterController extends Controller
         if ($role === 'ADMIN TS3') {
             request()->validate([
                 'mst_regional_id' => 'required',
-                'area' 	   => 'required|unique:ts3.mst.mst_area',
+                'area' 	   => 'required|unique:mtr.mst.mst_area',
                 ]);
 
 
-                DB::connection('ts3')->table('mst.mst_area')->insert([
+                DB::connection('mtr')->table('mst.mst_area')->insert([
                 'mst_regional_id'   => $request->mst_regional_id,
                 'area'	=> $request->area,
                 'created_date'    => date("Y-m-d h:i:sa"),
@@ -273,8 +964,8 @@ class MasterController extends Controller
         $role = Session::get('modules')['role'] ?? null;
         if ($role === 'ADMIN TS3') {
            
-                    $area 	= DB::connection('ts3')->table('mst.v_area')->where('id',$id)->first();
-                    $regional 	= DB::connection('ts3')->table('mst.v_regional')->get();
+                    $area 	= DB::connection('mtr')->table('mst.v_area')->where('id',$id)->first();
+                    $regional 	= DB::connection('mtr')->table('mst.v_regional')->get();
         
                    
                    
@@ -308,7 +999,7 @@ class MasterController extends Controller
                 'area' => 'required',
                 ]);
 
-                DB::connection('ts3')->table('mst.mst_area')->where('id',$request->id)->update([
+                DB::connection('mtr')->table('mst.mst_area')->where('id',$request->id)->update([
                     'mst_regional_id'   => $request->mst_regional_id,
                     'area'	    => $request->area,
                     'updated_at'    => date("Y-m-d h:i:sa"),
@@ -331,7 +1022,7 @@ class MasterController extends Controller
 
         $role = Session::get('modules')['role'] ?? null;
         if ($role === 'ADMIN TS3') {
-            $deleteResult =   DB::connection('ts3')->table('mst.mst_area')->where('id',$id)->delete();
+            $deleteResult =   DB::connection('mtr')->table('mst.mst_area')->where('id',$id)->delete();
     
             if ($deleteResult) {
                 return response()->json([
@@ -415,7 +1106,7 @@ class MasterController extends Controller
                             DB::connection('mtr')->commit();
                         }
                         catch (\Exception $e) {
-                            DB::connection('ts3')->rollback();
+                            DB::connection('mtr')->rollback();
                             return redirect('branch')->with(['warning' => $e]);
                         }    
 
@@ -557,7 +1248,7 @@ class MasterController extends Controller
                                 $btn = '<div class="btn-group">
                                 <a href="'. asset('edit-branch/'.$row->id).'" 
                                     class="btn btn-warning btn-sm"><i class="fa fa-edit"></i></a>
-                                <a href="'. asset('delete-branch/'.$row->id).'"  class="btn btn-danger btn-sm">
+                                <a href="'. asset('delete-branch/'.$row->id).'"  class="btn btn-danger btn-sm delete-link">
                                         <i class="fa fa-trash"></i></a>
                                 </div>';
                                     return $btn;
@@ -585,20 +1276,26 @@ class MasterController extends Controller
     public function Branchproses(Request $request)
     {
         $role = Session::get('modules')['role'] ?? null;
-        if ($role === 'ADMIN TS3') {      
-       
-                if(isset($_POST['hapus'])) {
-                    $id       = $request->id;
-            
-                    for($i=0; $i < sizeof($id);$i++) {
-                            
-                    DB::connection('mtr')->table('mst.mst_branch')->where('id',$id[$i])->delete();
-                    
+      
+
+            if ($role === 'ADMIN TS3') {
+                if ($request->has('hapus')) {
+                    $ids = $request->input('id');
+
+                    if (!empty($ids)) {
+
+                        foreach ($ids as $id) {
+                            DB::connection('mtr')->table('mst.mst_branch')->where('id', $id)->delete();
+                        }
+
+                        return redirect('branch')->with(['sukses' => 'Data telah dihapus']);
+                    } else {
+                        return redirect('branch')->with(['error' => 'Tidak ada data yang dipilih untuk dihapus.']);
                     }
-                
-                    return redirect('branch')->with(['sukses' => 'Data telah dihapus']);
                 }
             }
+
+
             $data = [   'title' => 'Access Forbidden',
                         'content'   => 'global/notification/forbidden'
                     ];

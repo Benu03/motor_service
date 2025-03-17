@@ -74,6 +74,6 @@
     }
 
     .gradient-custom {
-        background: linear-gradient(90deg, #03830a, #82ff44);
+        background: linear-gradient(90deg, #709c0b, #316b14);
     }
 </style>

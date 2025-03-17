@@ -9,8 +9,29 @@
     font-size: 11px;
   }
 </style>
+<style>
+  .custom-sidebar {
+          background: linear-gradient(rgba(110, 155, 6, 0.983), rgba(110, 150, 15, 0.85)), 
+          /* url("{{ asset('img/bg.png') }}") no-repeat center bottom; */
+          url("{{ url('img/bg.png') }}") no-repeat center bottom;
+          background-size: cover;
+          border-top-left-radius: 15px;
+          border-top-right-radius: 15px;
+          border-bottom-left-radius: 15px;
+          border-bottom-right-radius: 15px;
+          border-bottom: 4px solid rgba(255, 255, 255, 0.3); /* Garis border bawah */
+          margin: 5px;
+          box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+          transition: all 0.3s ease-in-out;
+      }
+  
+    .custom-sidebar:hover {
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+    }
+  </style>
 <!-- Main Sidebar Container -->
-  <aside class="main-sidebar sidebar-dark-primary elevation-4" style="background-color: #03830a; border-top-right-radius: 15px;">
+  {{-- <aside class="main-sidebar sidebar-dark-primary elevation-4" style="background-color: #03830a; border-top-right-radius: 15px;"> --}}
+    <aside class="main-sidebar sidebar-dark-primary elevation-4 custom-sidebar">
     <!-- Brand Logo -->
     <a href="{{ route('dashboard') }}" class="brand-link d-flex flex-column align-items-center" style="height: auto;">
       <img id="logo_wrap" alt="TS3 Indonesia" class="brand-image-xl py-1" src="{{ asset('assets/upload/image/logo.png') }}">
@@ -137,11 +158,11 @@
     <section class="content">
       <div class="row">
         <div class="col-12">
-          <div class="card" style="margin-top: 35px;">
+          <div class="card" style="margin-top: 35px;  margin-left: 5px">
             <div class="card-header">
               <div class="row">
               <div class="col-md-12">
-                 <h2 class="card-title"><?php echo $title ?></h2> 
+                <h2 class="card-title"><b>{{ $title }}</b></h2> 
               </div>
              
               

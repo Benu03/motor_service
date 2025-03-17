@@ -35,6 +35,36 @@ class SessionTokenCheck
 
         if(config('static.app_env') == 'local')
         {
+
+            if (!Session::has('user_module') || !Session::has('modules')) {
+
+                $parameters = $request->all();
+        
+                if (!isset($parameters['user']) || !isset($parameters['module']) || !isset($parameters['key_module'])) {
+                    echo "<script>alert('Invalid request parameters');</script>";
+                    echo "<script>setTimeout(function() { window.location.href = '/'; }, 1000);</script>";
+                    exit;
+                }
+
+                $secretKey = config('static.key_static');
+                $user = $this->base64DecodeWithSecret($parameters['user'], $secretKey);
+                $module = $this->base64DecodeWithSecret($parameters['module'], $secretKey);
+                $key_module = $this->base64DecodeWithSecret($parameters['key_module'], $secretKey);
+        
+
+                $secretKeyModule = config('static.key_module');
+
+                if ($key_module != $secretKeyModule) {
+                    echo "<script>alert('Key module tidak valid');</script>";
+                    echo "<script>setTimeout(function() { window.location.href = '/'; }, 1000);</script>";
+                    exit;
+                }
+        
+  
+                Session::put('user_module', $user);
+                Session::put('modules', $module);
+                Session::put('user', $user);
+            }
             return $next($request);
         }
         $url_lobby = config('static.url_portal_ts3_main');
@@ -167,4 +197,3 @@ class SessionTokenCheck
     
 
 }
-

@@ -8,7 +8,7 @@
 				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 			</div>
 			<div class="modal-body">
-				<form action="{{ asset('admin-ts3/regional/tambah') }}" enctype="multipart/form-data" method="post" accept-charset="utf-8">
+				<form action="{{ route('regional-add') }}" enctype="multipart/form-data" method="post" accept-charset="utf-8">
 				{{ csrf_field() }}
 				
 				<div class="form-group row">
@@ -72,13 +72,13 @@
 				'X-CSRF-TOKEN': '{{ csrf_token() }}'
 			},
 		 type: "POST",
-		 url: "{{ asset('admin-ts3/get-pic-regional')}}", 
+		 url: "{{ url('get-regional-pic-client')}}", 
 		 data:{mst_client_id:mst_client_id},      
 		 dataType: "JSON",                  
 		 success: function(data){   
 			$('#pic_regional').empty();
-			$.each(data, function (username, nama) {
-				$('#pic_regional').append(new Option(username,nama))
+			$.each(data, function (username, fullname) {
+				$('#pic_regional').append(new Option(username,fullname))
 			})
 			
 			

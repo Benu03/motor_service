@@ -69,21 +69,48 @@ Route::group(['middleware' => ['session_key']],function(){
 
     Route::get('/direct-service', [ServicesController::class, 'directService'])->name('direct-service');
     Route::post('/direct-service-process', [ServicesController::class, 'directServiceProcess'])->name('direct-service-process');
-    Route::get('/service-list-bengkel', [TestController::class, 'index'])->name('service-list-bengkel');
-    Route::get('/service-bengkel', [TestController::class, 'index'])->name('service-bengkel');
-    Route::get('/vehicle-list', [TestController::class, 'index'])->name('vehicle-list');
-    Route::get('/vehicle-type-client', [TestController::class, 'index'])->name('vehicle-type-client');
-    Route::get('/vehicle-client', [TestController::class, 'index'])->name('vehicle-client');
+    Route::get('/service-list-bengkel', [ServicesController::class, 'index'])->name('service-list-bengkel');
+    Route::get('/service-bengkel', [ServicesController::class, 'index'])->name('service-bengkel');
+    Route::get('/vehicle-list', [ServicesController::class, 'index'])->name('vehicle-list');
+    Route::get('/vehicle-type-client', [ServicesController::class, 'index'])->name('vehicle-type-client');
+    Route::get('/vehicle-client', [ServicesController::class, 'index'])->name('vehicle-client');
 
 
     Route::get('/master', [MasterController::class, 'index'])->name('master');
-    Route::get('/bengkel', [MasterController::class, 'Bengkel'])->name('bengkel');
+
+
     Route::get('/price-service', [MasterController::class, 'PriceService'])->name('price-service');
+    Route::get('/get-price-service', [MasterController::class, 'PriceServiceGet'])->name('get-price-service');
+    Route::post('/price-service-proses', [MasterController::class, 'PriceServiceproses'])->name('price-service-proses');
+    Route::post('/price-service-add', [MasterController::class, 'PriceServiceAdd'])->name('price-service-add');
+    Route::get('/price-service-edit/{data}', [MasterController::class, 'PriceServiceEdit'])->name('price-service-edit');
+    Route::post('/price-service-edit-process', [MasterController::class, 'PriceServiceEditProcess'])->name('price-service-edit-process');
+    Route::get('/price-service-delete/{data}', [MasterController::class, 'PriceServiceDelete'])->name('price-service-delete');
+    Route::get('/price-service-export', [MasterController::class, 'PriceServiceExport'])->name('price-service-export');
+
+
+    Route::get('/bengkel', [MasterController::class, 'Bengkel'])->name('bengkel');
+    Route::get('/get-bengkel', [MasterController::class, 'BengkelGet'])->name('get-bengkel');
+    Route::post('/bengkel-proses', [MasterController::class, 'Bengkelproses'])->name('bengkel-proses');
+    Route::post('/bengkel-add', [MasterController::class, 'BengkelAdd'])->name('bengkel-add');
+    Route::get('/bengkel-edit/{data}', [MasterController::class, 'BengkelEdit'])->name('bengkel-edit');
+    Route::post('/bengkel-edit-process', [MasterController::class, 'BengkelEditProcess'])->name('bengkel-edit-process');
+    Route::get('/bengkel-delete/{data}', [MasterController::class, 'BengkelDelete'])->name('bengkel-delete');
+    Route::get('/bengkel-export', [MasterController::class, 'BengkelExport'])->name('bengkel-export');
+
+
     Route::get('/regional', [MasterController::class, 'Regional'])->name('regional');
+    Route::get('/get-regional', [MasterController::class, 'getRegional'])->name('get-regional');
+    Route::post('/regional-add', [MasterController::class, 'RegionalAdd'])->name('regional-add');
+    Route::post('/regional-proses', [MasterController::class, 'Regionalproses'])->name('regional-proses');
+    Route::get('/edit-regional/{data}', [MasterController::class, 'EditRegional'])->name('edit-regional');
+    Route::post('/edit-regional-process', [MasterController::class, 'EditRegionalProcess'])->name('regional-area-process');
+    Route::get('/delete-regional/{data}', [MasterController::class, 'deleteRegional'])->name('delete-regional');
+    Route::get('/regional-export', [MasterController::class, 'RegionalExport'])->name('regional-export');
+    Route::post('/get-regional-pic-client', [MasterController::class, 'getRegionalpicClient'])->name('get-regional-pic-client');
+
 
     Route::post('/get-area-client', [MasterController::class, 'getAreaClient'])->name('get-area-client');
-    
-    
     Route::get('/area', [MasterController::class, 'Area'])->name('area');
     Route::get('/get-area', [MasterController::class, 'getArea'])->name('get-area');
     Route::post('/area-add', [MasterController::class, 'AreaAdd'])->name('area-add');
@@ -92,7 +119,7 @@ Route::group(['middleware' => ['session_key']],function(){
     Route::post('/edit-area-process', [MasterController::class, 'EditAreaProcess'])->name('edit-area-process');
     Route::get('/delete-area/{data}', [MasterController::class, 'deleteArea'])->name('delete-area');
     Route::get('/area-export', [MasterController::class, 'AreaExport'])->name('area-export');
-
+  
 
     Route::post('/get-branch-pic-client', [MasterController::class, 'getBranchpicClient'])->name('get-branch-pic-client');
     Route::get('/branch', [MasterController::class, 'Branch'])->name('branch');
@@ -105,6 +132,8 @@ Route::group(['middleware' => ['session_key']],function(){
     Route::get('/edit-branch/{data}', [MasterController::class, 'EditBranch'])->name('edit-branch');
     Route::post('/edit-branch-process', [MasterController::class, 'EditBranchProcess'])->name('edit-branch-process');
     Route::get('/delete-branch/{data}', [MasterController::class, 'deleteBranch'])->name('delete-branch');
+
+
     Route::get('/vehicle', [MasterController::class, 'Vehicle'])->name('vehicle');
     Route::get('/get-vehicle', [MasterController::class, 'getVehicle'])->name('get-vehicle');
     Route::post('/vehicle-add', [MasterController::class, 'VehicleAdd'])->name('vehicle-add');
@@ -116,6 +145,8 @@ Route::group(['middleware' => ['session_key']],function(){
     Route::get('/vehicle-template-upload', [MasterController::class, 'VehicleTemplateUpload'])->name('vehicle-template-upload');
     Route::post('/vehicle-upload', [MasterController::class, 'VehicleUpload'])->name('vehicle-upload');
     Route::get('/vehicle-export', [MasterController::class, 'VehicleExport'])->name('vehicle-export');
+
+
     Route::get('/vehicle-type', [MasterController::class, 'VehicleType'])->name('vehicle-type');
     Route::post('/vehicle-type-process', [MasterController::class, 'VehicleTypeProcess'])->name('vehicle-type-process');
     Route::get('/get-vehicle-type', [MasterController::class, 'getVehicletype'])->name('get-vehicle-type');

@@ -1,4 +1,4 @@
-<body class="hold-transition sidebar-mini layout-fixed pace-primary">
+<body class="hold-transition sidebar-mini layout-fixed pace-progress-inner">
   <div class="wrapper">
     <!-- Navbar -->
     <nav class="main-header navbar navbar-expand navbar-white navbar-light fixed-top">
@@ -8,9 +8,9 @@
           <a class="nav-link" data-widget="pushmenu" href="#"><i class="fas fa-bars"></i></a>
         </li>
         <li class="nav-item d-none d-sm-inline-block">
-          <a href="{{ route('lobby') }}" class="nav-link" style="color: #03830a;">
-            <i class="fa fa-home"></i> Lobby
-        </a>
+            <a href="{{ route('lobby') }}" class="btn btn-sm rounded-pill" style="background-color: #709c0b; color: white;">
+                <i class="fa fa-home"></i> Lobby
+              </a>
         </li>
       </ul>
 

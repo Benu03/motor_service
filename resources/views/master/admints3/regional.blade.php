@@ -10,15 +10,16 @@
 <p>
   @include('master/admints3/regional_tambah')
 </p>
-<form action="{{ asset('admin-ts3/regional/proses') }}" method="post" accept-charset="utf-8">
+<form id="delete-form" class="form-confirm" action="{{ route('regional-proses') }}" method="post" accept-charset="utf-8">
 {{ csrf_field() }}
+<input type="hidden" name="hapus" value="1">
 <div class="row">
 
   <div class="col-md-8">
     <div class="btn-group">
-      <button class="btn btn-danger" type="submit" name="hapus" onClick="check();" >
-          <i class="fa fa-trash"></i>
-      </button> 
+        <button type="button" class="btn btn-danger btn-sweet-delete">
+            <i class="fa fa-trash"></i> Hapus
+        </button>
         <button type="button" class="btn btn-primary " data-toggle="modal" data-target="#Tambah">
             <i class="fa fa-plus"></i> Tambah Baru
         </button>
@@ -26,7 +27,7 @@
 </div>
 
 <div class="col-md-4 text-right">
-    <a href="{{ asset('admin-ts3/export/regional') }}" class="btn btn-success">       
+    <a href="{{ route('regional-export') }}" class="btn btn-success">       
         <i class="fas fa-file-excel"></i> Export Excel
     </a>
 </div>
@@ -81,7 +82,7 @@ $(document).ready(function() {
                     }
                 },
                 ajax: {
-                    url:"{{  asset('admin-ts3/get-regional') }}",
+                    url:"{{  url('get-regional') }}",
                     type: "GET"
                          
                 },
