@@ -22,6 +22,9 @@ class DashboardController extends Controller
         if ($role === 'ADMIN TS3') {
             return $this->dashAdminTs3();
         } 
+        elseif ($role === 'BENGKEL') {
+            return $this->dashBengkel();
+        } 
         else 
         {
             $data = [
@@ -31,6 +34,39 @@ class DashboardController extends Controller
 
             return view('layout/wrapper', $data);
         }
+    }
+
+    private function dashBengkel()
+    {
+
+        $username =  session()->get('user_module')['username'];
+        $countData = DB::connection('mtr')->table('mvm.v_spk_detail')
+        ->select(
+            DB::raw("COUNT(*) as total_service"),
+            DB::raw("SUM(CASE WHEN source = 'Direct' THEN 1 ELSE 0 END) as total_direct")
+        )
+        ->where('spk_status', 'ONPROGRESS')
+        ->whereIn('status_service', ['ONSCHEDULE'])
+        ->where('pic_branch', $username)
+        ->first();
+    
+        $countservice = $countData?->total_service ?? 0;
+        $direct = $countData?->total_direct ?? 0;
+
+        $invoice = DB::connection('mtr')->table('mvm.mvm_invoice_h')
+        ->where('create_by', $username)
+        ->whereIn('status', ['PROSES', 'REQUEST'])
+        ->count();
+
+        $data = [
+            'title' => 'Dashboard',
+            'service' => $countservice,
+            'direct' => $direct,
+            'invoice' => $invoice,
+            'content' => 'dashboard/bengkel',
+        ];
+    
+        return view('layout/wrapper', $data);
     }
 
     private function dashAdminTs3()

@@ -77,7 +77,7 @@
 <div class="clearfix"><hr></div>
 <div class="table-responsive mailbox-messages">
     <div class="table-responsive mailbox-messages">
-<table id="RekapInvoicedataTable" class="display table table-bordered" cellspacing="0" width="100%" style="font-size: 12px;">
+<table id="dataTable" class="display table table-bordered" cellspacing="0" width="100%" style="font-size: 12px;">
 <thead>
     <tr class="bg-info">
         {{-- <th width="5%">
@@ -113,7 +113,7 @@
     $(document).ready(function() { 
         fetch_data()
         function fetch_data(from_date = '', to_date = ''){                    
-                $('#RekapInvoicedataTable').DataTable({
+                $('#dataTable').DataTable({
                     pageLength: 10,
                     lengthChange: true,
                     bFilter: true,
@@ -134,7 +134,7 @@
                     },
                     ajax: {
                         headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}'},
-                        url:"{{  asset('admin-ts3/get-rekap-invoice') }}",
+                        url:"{{  url('get-rekap-invoice') }}",
                         type: "POST",
                         data: function (d) {
                         d.from_date = from_date;
@@ -253,7 +253,7 @@
             // Kirim permintaan AJAX ke kontroler Anda untuk mendapatkan data
             $.ajax({
                 headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}'},
-                url: "{{  asset('admin-ts3/export-rekap-invoice') }}",
+                url: "{{  url('export-rekap-invoice') }}",
                 type: "POST",
                 data: {
                     from_date: from_date,

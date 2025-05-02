@@ -50,7 +50,7 @@ $(document).ready(function(){
             // Ajax request
             $.ajax({
                 headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}'},
-                url: "{{ url('admin-ts3/gps-check-process') }}", // Gunakan url() untuk menghasilkan URL lengkap
+                url: "{{ url('gps-check-process') }}", // Gunakan url() untuk menghasilkan URL lengkap
                 type: 'POST',
                 data: {
                     sn: sn

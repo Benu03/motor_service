@@ -259,13 +259,13 @@ $awal = $sek-5;
 <!-- /.content -->
 </div>
 
-<footer class="main-footer">
+{{-- <footer class="main-footer">
   <strong><i class="fas fa-copyright"></i>
     <a href="javascript:void(0)"> TS3 Indonesia <?= date('Y'); ?> </a> 
   </strong>
 
 
-</footer>
+</footer> --}}
 
 <!-- Control Sidebar -->
 <aside class="control-sidebar control-sidebar-dark">

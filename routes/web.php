@@ -54,7 +54,11 @@ Route::group(['middleware' => ['session_key']],function(){
 
     Route::get('/other-feature', [FeatureController::class, 'index'])->name('other-feature');
     Route::get('/vehicle-check', [FeatureController::class, 'VehicleCheck'])->name('vehicle-check');
+    Route::post('/vehicle-check-process', [FeatureController::class, 'VehicleCheckProcess'])->name('vehicle-check-process');
     Route::get('/gps-check', [FeatureController::class, 'GpsCheck'])->name('gps-check');
+    Route::post('/gps-check-process', [FeatureController::class, 'GpsCheckProcess'])->name('gps-check-process');
+    Route::get('/gps-evidance/{data}', [FeatureController::class, 'Gpsevidance'])->name('gps-evidance');
+
 
 
     Route::get('/report', [ReportController::class, 'index'])->name('report');
@@ -63,10 +67,12 @@ Route::group(['middleware' => ['session_key']],function(){
     Route::post('/get-history-service',  [ReportController::class, 'getHistoryService'])->name('get-history-service');
     Route::get('/report-history-service-detail/{par1}', [ReportController::class, 'ReportHistoryServiceDetail'])->name('report-history-service-detail');
     Route::post('/export-history-service',  [ReportController::class, 'exportHistoryService'])->name('export-history-service');
+    Route::get('/report-rekap-invoice', [ReportController::class, 'ReportRekapInvoice'])->name('report-rekap-invoice');
+    Route::post('/get-rekap-invoice', [ReportController::class, 'GetRekapInvoice'])->name('get-rekap-invoice');
 
 
     Route::get('/report-realisasi-spk', [ReportController::class, 'ReportRealisasiSpk'])->name('report-realisasi-spk');
-    Route::get('/report-rekap-invoice', [ReportController::class, 'ReportRekapInvoice'])->name('report-rekap-invoice');
+   
     Route::get('/report-spk-history', [ReportController::class, 'ReportSpkHistory'])->name('report-spk-history');
     Route::get('/report-summary-bengkel', [ReportController::class, 'ReportSummaryBengkel'])->name('report-summary-bengkel');
     Route::get('/report-service-duedate', [ReportController::class, 'ReportServicedueDate'])->name('report-service-duedate');
@@ -77,8 +83,8 @@ Route::group(['middleware' => ['session_key']],function(){
 
     Route::get('/direct-service', [ServicesController::class, 'directService'])->name('direct-service');
     Route::post('/direct-service-process', [ServicesController::class, 'directServiceProcess'])->name('direct-service-process');
-    Route::get('/service-list-bengkel', [ServicesController::class, 'index'])->name('service-list-bengkel');
-    Route::get('/service-bengkel', [ServicesController::class, 'index'])->name('service-bengkel');
+    Route::get('/service-list-bengkel', [ServicesController::class, 'ServiceListBengkel'])->name('service-list-bengkel');
+    Route::get('/service-bengkel-process/{data}', [ServicesController::class, 'ServiceBengkelProcess'])->name('service-bengkel-process');
     Route::get('/vehicle-list', [ServicesController::class, 'index'])->name('vehicle-list');
     Route::get('/vehicle-type-client', [ServicesController::class, 'index'])->name('vehicle-type-client');
     Route::get('/vehicle-client', [ServicesController::class, 'index'])->name('vehicle-client');

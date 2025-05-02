@@ -15,6 +15,48 @@ use Illuminate\Support\Facades\Session;
 class InvoiceController extends Controller
 {
 
+    public function index(Request $request)
+    {
+        $role = Session::get('modules')['role'] ?? null;
+
+        if ($role === 'BENGKEL') {
+            return $this->InvBengkel($request);
+        } 
+        else 
+        {
+            $data = [
+                'title' => 'Access Forbidden',
+                'content' => 'global/notification/forbidden',
+            ];
+
+            return view('layout/wrapper', $data);
+        }
+    }
+
+    private function InvBengkel($request)
+    {
+
+        $count_req = DB::connection('mtr')->table('mvm.mvm_invoice_h')
+                    // ->where('create_by',Session()->get('username'))
+                    ->where('status','REQUEST')->count();
+        $count_pro = DB::connection('mtr')->table('mvm.mvm_invoice_h')
+                        // ->where('create_by',Session()->get('username'))
+                        ->where('status','PROSES')->count();
+        $invoice = DB::connection('mtr')->table('mvm.mvm_invoice_h')
+                    // ->where('create_by',Session()->get('username'))
+                    ->whereIn('status',['PROSES','REQUEST'])->get();
+		$data = array(   'title'        => 'Invoice',
+                         'invoice'      => $invoice,
+                         'count_req'    => $count_req,
+                         'count_pro'    => $count_pro,
+                        'content'       => 'invoice/bengkel/index'
+                    );
+                    return view('layout/wrapper',$data);
+
+    }
+
+
+
     public function InvoiceBengkel(Request $request)
     {
        
