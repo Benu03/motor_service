@@ -403,11 +403,14 @@ class MasterController extends Controller
         if ($role === 'ADMIN TS3') {
 
             $bengkel 	= DB::connection('mtr')->table('mst.v_bengkel')->where('id',$id)->first();
-            $user_bengkel 	= DB::connection('mtr')->table('auth.users')->where('id_role','4')->get();
-           
+            $user_bengkel 	= DB::connection('mtr')->table('mst.mst_user_access')->where('role','BENGKEL')->get();
+
+            $bengkelmember 	= DB::connection('mtr')->table('mst.mst_bengkel_member')->where('mst_bengkel_id',$id)->get();
+            
 		    $data = array(  'title'         => 'Edit Bengkel',
                             'bengkel'      => $bengkel,
                             'userbengkel'      => $user_bengkel,
+                            'memberbengkel' => $bengkelmember,
                             'content'       => 'master/admints3/bengkel_edit'
                     );
         
@@ -441,7 +444,7 @@ class MasterController extends Controller
                             'latitude'	=> $request->latitude,
                             'longitude'	=> $request->longitude,
                             'updated_at'    => date("Y-m-d h:i:sa"),
-                            'update_by'     => $request->session()->get('username')
+                            'update_by'     => session()->get('user_module')['username']
                         ]);   
                         DB::connection('mtr')->commit();
                     }
@@ -495,8 +498,68 @@ class MasterController extends Controller
         return view('layout/wrapper',$data);
 
     }
-    
 
+    public function BengkelMemberAdd(Request $request)
+    {
+        $request->validate([
+            'bengkel_id' => 'required|integer',
+            'member_bengkel' => 'required|string'
+        ]);
+    
+        try {
+            // Cek apakah sudah ada
+            $existing =  DB::connection('mtr')->table('mst.mst_bengkel_member')
+                ->where('mst_bengkel_id', $request->bengkel_id)
+                ->where('username', $request->member_bengkel)
+                ->first();
+            if ($existing) {
+                return response()->json(['success' => false, 'message' => 'Member sudah terdaftar.']);
+            }
+    
+            // Tambah ke tabel
+            DB::connection('mtr')->table('mst.mst_bengkel_member')->insert([
+                'mst_bengkel_id' => $request->bengkel_id,
+                'username' => $request->member_bengkel,
+                'created_by' => session()->get('user_module')['username']
+            ]);
+    
+            return response()->json(['success' => true, 'username' => $request->member_bengkel]);
+    
+        } catch (\Exception $e) {
+            // Log error detail
+            Log::error('Gagal menambahkan member bengkel: ' . $e->getMessage(), [
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+                'trace' => $e->getTraceAsString(),
+                'input' => $request->all(),
+            ]);
+    
+            return response()->json(['success' => false, 'message' => 'Gagal menambahkan member.']);
+        }
+    }
+
+    
+    public function BengkelMemberHapus(Request $request)
+    {
+        $request->validate([
+            'bengkel_id' => 'required|integer',
+            'username' => 'required|string'
+        ]);
+
+        try {
+            DB::connection('mtr')->table('mst.mst_bengkel_member')
+                ->where('mst_bengkel_id', $request->bengkel_id)
+                ->where('username', $request->username)
+                ->delete();
+
+            return response()->json(['success' => true]);
+
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Gagal menghapus member.']);
+        }
+    }
+    
+    
 
     public function PriceService(Request $request)
     {

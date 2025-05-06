@@ -112,6 +112,9 @@ Route::group(['middleware' => ['session_key']],function(){
     Route::get('/bengkel-delete/{data}', [MasterController::class, 'BengkelDelete'])->name('bengkel-delete');
     Route::get('/bengkel-export', [MasterController::class, 'BengkelExport'])->name('bengkel-export');
 
+    Route::post('/bengkel-member-add', [MasterController::class, 'BengkelMemberAdd'])->name('bengkel-member-add');
+    Route::post('/bengkel-member-hapus', [MasterController::class, 'BengkelMemberHapus'])->name('bengkel-member-hapus');
+
 
     Route::get('/regional', [MasterController::class, 'Regional'])->name('regional');
     Route::get('/get-regional', [MasterController::class, 'getRegional'])->name('get-regional');
