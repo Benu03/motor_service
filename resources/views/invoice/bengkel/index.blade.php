@@ -56,7 +56,7 @@
 <div class="clearfix"><hr></div>
 
 <div class="btn-group">
-    <a href="{{ asset('bengkel/invoice-create') }}" 
+    <a href="{{ route('invoice-create') }}" 
       class="btn btn-warning"><i class="fas fa-receipt"></i> Create Invoice</a>
 
     </div>

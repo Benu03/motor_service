@@ -123,6 +123,42 @@ class ServicesController extends Controller
     
 
 
+    public function ServiceListpublic(Request $request)
+    {
+        $role = Session::get('modules')['role'] ?? null;
+        if ($role === 'BENGKEL' || $role === 'ADMIN TS3') {
+
+            $bengkel 	= DB::connection('mtr')->table('mst.mst_bengkel')->where('pic_bengkel',Session()->get('username'))->first();
+
+            $countservice = DB::connection('mtr')->table('mvm.v_spk_detail')->where('spk_status','ONPROGRESS')->wherein('status_service',['ONSCHEDULE'])
+                            ->where('mst_bengkel_id',$bengkel->id)
+                            ->count();
+            $service = DB::connection('mtr')->table('mvm.v_spk_detail')->where('spk_status','ONPROGRESS')
+                        ->wherein('status_service',['ONSCHEDULE'])
+                        // ->where('mst_bengkel_id',$bengkel->id)
+                        ->orderByRaw('tanggal_schedule')->get();
+    
+            $data = array(   'title'     => 'List Service',
+                             'countservice'      => $countservice,
+                             'service'      => $service,
+                            'content'   => 'service/service_list_public'
+                        );
+        
+            return view('layout/wrapper',$data);
+
+        } 
+        else 
+        {
+            $data = [
+                'title' => 'Access Forbidden',
+                'content' => 'global/notification/forbidden',
+            ];
+
+            return view('layout/wrapper', $data);
+        }
+    }
+
+
    
 
 

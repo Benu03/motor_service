@@ -11,7 +11,8 @@ use App\Http\Controllers\{
     ReportController,
     ApprovalController,
     InvoiceController,
-    FeatureController
+    FeatureController,
+    B2CController
 };
 
 /*
@@ -90,9 +91,15 @@ Route::group(['middleware' => ['session_key']],function(){
     Route::get('/vehicle-client', [ServicesController::class, 'index'])->name('vehicle-client');
 
 
+    #BEGIN B2C
+    Route::get('/service-b2c', [B2CController::class, 'Serviceb2c'])->name('service-b2c');
+    Route::get('/service-list-b2c', [B2CController::class, 'ServiceListpublic'])->name('service-list-b2c');
+    Route::get('/order-list-b2c', [B2CController::class, 'Ordereb2c'])->name('order-list-b2c');
+    Route::get('/invoice-list-b2c', [B2CController::class, 'invoiceb2c'])->name('invoice-list-b2c');
+
+    #END B2C
+
     Route::get('/master', [MasterController::class, 'index'])->name('master');
-
-
     Route::get('/price-service', [MasterController::class, 'PriceService'])->name('price-service');
     Route::get('/get-price-service', [MasterController::class, 'PriceServiceGet'])->name('get-price-service');
     Route::post('/price-service-proses', [MasterController::class, 'PriceServiceproses'])->name('price-service-proses');
