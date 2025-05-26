@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Session;
-
+use Barryvdh\DomPDF\PDF;
 
 class B2CController extends Controller
 {
@@ -129,35 +129,115 @@ class B2CController extends Controller
 
     public function invoiceb2c(Request $request)
     {
-       
         $role = Session::get('modules')['role'] ?? null;
-
+    
         if ($role === 'BENGKEL' || $role === 'ADMIN TS3') {
-        
-            $data = [
-                'title'         => 'Invoice List',
-                'content'       => 'b2c/invoice_list',
-            ];
-        
-            return view('layout/wrapper',$data);
-            
+    
+            $timestamp = Carbon::now('Asia/Jakarta')->format('Y-m-d H:i:s');
+            $encryptionKey = config('static.key_access') . $timestamp;
+            $keyPun = hash(config('static.key_hash'), $encryptionKey);
+    
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'key-service' => $keyPun,
+                'timestamp' => $timestamp
+            ])->withoutVerifying()->post(config('static.url_generate_pdf_invoice'));
+    
 
-        } 
-        else 
-        {
+            if ($response->successful()) {
+                $pdfContent = $response->body();
+    
+
+                return response($pdfContent, 200, [
+                    'Content-Type' => 'application/pdf',
+                    'Content-Disposition' => 'inline; filename="invoice.pdf"',
+                ]);
+
+
+
+            } else {
+                return response()->json(['error' => 'Failed to get PDF from service'], 500);
+            }
+    
+        } else {
             $data = [
                 'title' => 'Access Forbidden',
                 'content' => 'global/notification/forbidden',
             ];
-
+    
             return view('layout/wrapper', $data);
-
         }
-
     }
+    
+
+
+    public function invoicepdfb2c($data)
+    {
+        Log::info('Begin Notif InvoiceGeneratePDF');
+
+        $service =  DB::connection('mtr')
+        ->table('mvm.mvm_service_user_h')
+        ->where('invoice_no', $data)
+        ->first();
 
 
 
+
+        $invoice = DB::connection('mtr')
+        ->table('mvm.mvm_invoice_user_h')
+        ->where('invoice_no', $data)
+        ->first();
+
+
+     
+             $invoice_detail = DB::connection('mtr')
+            ->table('mvm.mvm_invoice_user_d')
+            ->where('invoice_no', $data)
+            ->get();
+            
+            $config = [];
+    
+
+
+            $pdf = app('dompdf.wrapper');
+            $pdf->loadView('pdf/invoice_generate_user', [
+                'invoice'        => $invoice,
+                'invoice_detail' => $invoice_detail,
+                'bengkel'        => $service,
+                'config'         => $config
+            ])->setPaper('a4', 'landscape');
+    
+            // Render PDF
+            $pdf->render();
+            $canvas = $pdf->getDomPDF()->getCanvas();
+    
+            // Ambil ukuran halaman PDF
+            $w = $canvas->get_width();
+            $h = $canvas->get_height();
+    
+            // Tambahkan watermark (logo perusahaan)
+            $imageURL = storage_path('data/image/logo_pdf.png');
+            $imgWidth = 300;
+            $imgHeight = 200;
+    
+            // Set opacity logo watermark
+            $canvas->set_opacity(0.1);
+    
+            // Posisi tengah halaman
+            $x = ($w - $imgWidth) / 2;
+            $y = ($h - $imgHeight) / 2;
+    
+            // Tambahkan gambar watermark
+            $canvas->image($imageURL, $x, $y, $imgWidth, $imgHeight);
+    
+            // Download PDF dengan nama file sesuai invoice
+            return $pdf->stream($data . '.pdf');
+
+
+        
+    }
+    
+  
    
 
 

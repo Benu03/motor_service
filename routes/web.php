@@ -97,6 +97,7 @@ Route::group(['middleware' => ['session_key']],function(){
     Route::post('/service-detail-b2c', [B2CController::class, 'ServiceDetailB2C'])->name('service-detail-b2c');
     Route::get('/order-list-b2c', [B2CController::class, 'Ordereb2c'])->name('order-list-b2c');
     Route::get('/invoice-b2c/{data}', [B2CController::class, 'invoiceb2c'])->name('invoice-b2c');
+    Route::get('/invoice-pdf-b2c/{data}', [B2CController::class, 'invoicepdfb2c'])->name('invoice-pdf-b2c');
 
     #END B2C
 

@@ -55,12 +55,15 @@
                     <td>{{ $row->order_number ?? '-' }}</td>
                     <td>{{ $row->status ?? '-' }}</td>
                     <td class="text-center">{{ $row->tanggal_service ?? '-' }}</td>
-                    <td>{{ $row->nopol ?? '-' }}</td>
                     <td class="text-center">
                         @if (!empty($row->invoice_no))
-                            <a href="{{ route('invoice-b2c', $row->invoice_no) }}" class="btn btn-sm btn-secondary">
-                                {{  $row->invoice_no }}
-                            </a>
+                            <button 
+                                class="btn btn-sm btn-secondary" 
+                                data-toggle="modal" 
+                                data-target="#pdfModal" 
+                                data-invoice="{{ $row->invoice_no }}">
+                                {{ $row->invoice_no }}
+                            </button>
                         @else
                             -
                         @endif
@@ -92,6 +95,25 @@
     </table>
 </div>
 
+
+<!-- Modal PDF Viewer -->
+<div class="modal fade" id="pdfModal" tabindex="-1" role="dialog" aria-labelledby="pdfModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Preview Invoice PDF</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Tutup">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <iframe id="pdfFrame" src="" width="100%" height="600px" frameborder="0"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
 
 <div
   class="modal fade"
@@ -224,3 +246,20 @@
 
   });
 </script>
+<script>
+  $('#pdfModal').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget);
+    var invoiceNo = button.data('invoice');
+
+    var pdfUrl = "{{ url('invoice-pdf-b2c') }}" + "/" + invoiceNo;
+
+    var modal = $(this);
+    modal.find('#pdfFrame').attr('src', pdfUrl);
+});
+
+$('#pdfModal').on('hidden.bs.modal', function () {
+    $(this).find('#pdfFrame').attr('src', '');
+});
+</script>
+
+    
