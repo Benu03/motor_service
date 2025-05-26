@@ -21,8 +21,8 @@
                         </div>
                     </div>
                     <div>
-                        <div class="text-muted small">Status: <strong>{{ strtoupper($item->status) }}</strong></div>
-                        <div class="h5 fw-bold">{{ $item->count_status }}</div>
+                        <div class="text-muted small ml-2"><strong>{{ strtoupper($item->status) }}</strong></div>
+                        <div class="h5 fw-bold ml-2">{{ $item->count_status }}</div>
                     </div>
                 </div>
             </div>
@@ -49,16 +49,16 @@
         <tbody>
             @foreach ($data as $index => $row)
                 <tr>
-                    <td>{{ $index + 1 }}</td>
-                    <td>{{ $row->nopol ?? '-' }}</td>
+                    <td class="text-center">{{ $index + 1 }}</td>
+                    <td class="text-center">{{ $row->nopol ?? '-' }}</td>
                     <td>{{ $row->order_number ?? '-' }}</td>
                     <td>{{ $row->status ?? '-' }}</td>
-                    <td>{{ $row->jadwal_service ?? '-' }}</td>
+                    <td class="text-center">{{ $row->jadwal_service ?? '-' }}</td>
                     <td>{{ $row->created_by ?? '-' }}</td>
-                    <td>
+                    <td class="text-center">
                         <button 
                         type="button" 
-                        class="btn btn-sm btn-primary btn-detail"
+                        class="btn btn-sm btn-success btn-detail"
                         data-toggle="modal"
                         data-target="#detailModalorder"
                         data-nopol="{{ $row->nopol }}"
@@ -76,7 +76,7 @@
                         data-jadwal="{{ $row->jadwal_service }}"
                         data-user="{{ $row->created_by }}"
                     >
-                        Detail
+                    <i class="fa fa-eye"></i>
                     </button>
                     </td>
                 </tr>
